@@ -418,6 +418,54 @@
             gap: 20px;
         }
 
+        .time-controls {
+            background: #ffffff;
+            border: 2px solid #000000;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .time-controls label {
+            font-weight: bold;
+            color: #000000;
+        }
+
+        .time-slider {
+            flex: 1;
+            height: 8px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #e5e5e5;
+            outline: none;
+            border: 1px solid #000000;
+        }
+
+        .time-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #000000;
+            cursor: pointer;
+        }
+
+        .time-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #000000;
+            cursor: pointer;
+            border: none;
+        }
+
+        .speed-display {
+            font-weight: bold;
+            color: #000000;
+            min-width: 80px;
+        }
+
         .session-label {
             font-size: 1.2em;
             font-weight: bold;
@@ -528,6 +576,12 @@
                 <div class="session-label">Session: <span id="sessionName">1</span></div>
                 <div class="market-clock" id="marketClock">09:15</div>
                 <div class="market-status open" id="marketStatus">MARKET OPEN</div>
+            </div>
+
+            <div class="time-controls">
+                <label>⚡ Time Speed:</label>
+                <input type="range" min="1" max="100" value="1" class="time-slider" id="timeSlider" oninput="updateTimeSpeed(this.value)">
+                <span class="speed-display" id="speedDisplay">1x (Real-time)</span>
             </div>
 
             <div class="controls">
@@ -798,9 +852,28 @@
         const SESSION_DURATION_MS = 15 * 60 * 1000; // 15 minutes in milliseconds
         const MARKET_START_TIME = { hours: 9, minutes: 15 };
         const MARKET_END_TIME = { hours: 15, minutes: 30 };
+        let timeSpeed = 1; // Speed multiplier (1 = real-time, 100 = 100x faster)
 
         // Order book structure: { symbol: [{ qty, price, amt, newPrice }] }
         let orderBook = {};
+
+        // Update time speed
+        function updateTimeSpeed(value) {
+            timeSpeed = parseInt(value);
+            const speedDisplay = document.getElementById('speedDisplay');
+            
+            if (timeSpeed === 1) {
+                speedDisplay.textContent = '1x (Real-time)';
+            } else if (timeSpeed <= 5) {
+                speedDisplay.textContent = timeSpeed + 'x';
+            } else if (timeSpeed <= 20) {
+                speedDisplay.textContent = timeSpeed + 'x (Fast)';
+            } else if (timeSpeed <= 50) {
+                speedDisplay.textContent = timeSpeed + 'x (Very Fast)';
+            } else {
+                speedDisplay.textContent = timeSpeed + 'x (TURBO)';
+            }
+        }
 
         // Initialize order book for each stock
         function initializeOrderBook() {
@@ -979,9 +1052,12 @@
 
         // Convert real time (9:15 to 15:30) to elapsed milliseconds in 15-minute window
         function getMarketTime(elapsedMs) {
+            // Apply time speed multiplier
+            const acceleratedElapsed = elapsedMs * timeSpeed;
+            
             // Total market duration: 9:15 to 15:30 = 6h 15min = 375 minutes
             const totalMarketMinutes = 375;
-            const progressRatio = elapsedMs / SESSION_DURATION_MS;
+            const progressRatio = acceleratedElapsed / SESSION_DURATION_MS;
             const currentMarketMinutes = Math.floor(progressRatio * totalMarketMinutes);
             
             let hours = MARKET_START_TIME.hours;
@@ -1004,6 +1080,7 @@
             if (!sessionStartTime) return;
             
             const elapsed = Date.now() - sessionStartTime;
+            const acceleratedElapsed = elapsed * timeSpeed;
             const time = getMarketTime(elapsed);
             const timeString = formatTime(time.hours, time.minutes);
             
@@ -1011,7 +1088,7 @@
             
             // Update market status
             const statusEl = document.getElementById('marketStatus');
-            const progressPercent = (elapsed / SESSION_DURATION_MS) * 100;
+            const progressPercent = (acceleratedElapsed / SESSION_DURATION_MS) * 100;
             
             if (progressPercent < 90) {
                 statusEl.textContent = 'MARKET OPEN';
@@ -1037,10 +1114,11 @@
             // Update every 100ms for smooth animation
             marketClockInterval = setInterval(updateMarketClock, 100);
             
-            // Auto-stop after 15 minutes
+            // Auto-stop based on time speed
+            const adjustedDuration = SESSION_DURATION_MS / timeSpeed;
             setTimeout(() => {
                 stopMarketClock();
-            }, SESSION_DURATION_MS);
+            }, adjustedDuration);
         }
 
         function stopMarketClock() {
@@ -1238,16 +1316,25 @@ Currently using default sample prices.`);
                 if (stock) {
                     const totalImpact = (stock.price * newsItem.impact) / 100;
                     
-                    // Spread the movement over 15 minutes (900 seconds)
-                    // Update every 2 seconds = 450 steps total
-                    const updateInterval = 2000; // 2 seconds
-                    const totalSteps = 450; // 15 min / 2 sec
+                    // Spread the movement over session duration (adjusted for speed)
+                    // At 1x speed: 900 seconds (15 min), at 100x: 9 seconds
+                    const sessionDurationSeconds = (SESSION_DURATION_MS / 1000) / timeSpeed;
+                    const updateInterval = 2000; // Still update every 2 seconds
+                    const totalSteps = Math.floor(sessionDurationSeconds / 2);
                     const incrementPerStep = totalImpact / totalSteps;
                     
                     let currentStep = 0;
                     
                     const priceAnimation = setInterval(() => {
-                        if (currentStep < totalSteps && sessionStartTime && (Date.now() - sessionStartTime) < SESSION_DURATION_MS) {
+                        if (!sessionStartTime) {
+                            clearInterval(priceAnimation);
+                            return;
+                        }
+                        
+                        const elapsed = Date.now() - sessionStartTime;
+                        const acceleratedElapsed = elapsed * timeSpeed;
+                        
+                        if (currentStep < totalSteps && acceleratedElapsed < SESSION_DURATION_MS) {
                             stock.price += incrementPerStep;
                             updateStockCard(stock.symbol);
                             currentStep++;
@@ -1324,6 +1411,13 @@ Currently using default sample prices.`);
 
         // Random price fluctuations (small movements every 3 seconds)
         setInterval(() => {
+            // Only update prices if market is open (session is running)
+            if (!sessionStartTime) return; // Market hasn't started
+            
+            const elapsed = Date.now() - sessionStartTime;
+            const acceleratedElapsed = elapsed * timeSpeed;
+            if (acceleratedElapsed >= SESSION_DURATION_MS) return; // Market has closed
+            
             stocks.forEach(stock => {
                 // Calculate realistic random change: 0.05% to 0.15% of current price
                 const percentChange = (Math.random() - 0.5) * 0.003; // -0.15% to +0.15%
