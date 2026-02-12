@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EMPORIO 2025 - Joseph's Stock Exchange</title>
-    <script src="market_engine.js"></script>
     <style>
         * {
             margin: 0;
@@ -21,7 +20,7 @@
         }
 
         body.presentation-mode {
-            font-size: 16px;
+            font-size: 18px;
             padding: 5px;
         }
 
@@ -30,7 +29,23 @@
         }
 
         body.presentation-mode .stock-grid {
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        body.presentation-mode .stock-card {
+            padding: 18px;
+        }
+
+        body.presentation-mode .current-price {
+            font-size: 2em;
+        }
+
+        body.presentation-mode .company-name {
+            font-size: 1.3em;
+        }
+
+        body.presentation-mode .header h1 {
+            font-size: 1.4em;
         }
 
         .layout {
@@ -540,19 +555,24 @@
         .header {
             background: #000000;
             color: #ffffff;
-            padding: 20px;
+            padding: 8px 20px;
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             border: 2px solid #000000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
         }
 
         .header h1 {
-            font-size: 2.2em;
-            margin-bottom: 8px;
+            font-size: 1.2em;
+            margin-bottom: 0;
         }
 
         .header p {
-            font-size: 1.1em;
+            font-size: 0.85em;
+            opacity: 0.7;
         }
 
         .session-info {
@@ -819,8 +839,8 @@
             font-family: 'Courier New', monospace;
         }
 
-        .price-change.positive { color: #000000; }
-        .price-change.negative { color: #666666; }
+        .price-change.positive { color: #16a34a; }
+        .price-change.negative { color: #dc2626; }
 
         .stats {
             display: grid;
@@ -949,6 +969,65 @@
             padding: 15px;
             margin-bottom: 15px;
             box-shadow: 4px 4px 0 #000000;
+        }
+        /* TEAM HOLDINGS TABLE */
+        .team-holdings-section {
+            background: #ffffff;
+            border: 2px solid #000000;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .holdings-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #000000;
+        }
+
+        .holdings-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85em;
+            font-family: 'Courier New', monospace;
+        }
+
+        .holdings-table th {
+            background: #000000;
+            color: #ffffff;
+            padding: 8px 10px;
+            text-align: center;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+        }
+
+        .holdings-table th:first-child {
+            text-align: left;
+        }
+
+        .holdings-table td {
+            padding: 7px 10px;
+            text-align: center;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .holdings-table td:first-child {
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .holdings-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .holdings-table tr:hover {
+            background: #f0f0f0;
+        }
+
+        .holdings-zero {
+            color: #ccc;
         }
     </style>
 </head>
@@ -1096,7 +1175,7 @@
                             <select id="engineEnabled" onchange="toggleMarketEngine()">
                                 <option value="false">Disabled (Simple Mode)</option>
                                 <option value="true">Built-in Engine</option>
-                                <option value="external">External Engine (market_engine.js)</option>
+                                <option value="external" selected>Full Market Engine (Embedded)</option>
                             </select>
                         </div>
                         <div class="config-item">
@@ -1109,13 +1188,6 @@
                         </div>
                     </div>
                     
-                    <div style="margin: 15px 0; padding: 15px; background: #fff4e6; border: 2px solid #000;">
-                        <strong>External Engine Instructions:</strong><br>
-                        1. Place market_engine.js in same folder as index.html<br>
-                        2. Select "External Engine" mode above<br>
-                        3. The external engine will override built-in calculations<br>
-                        4. External engine must expose: MarketEngine.calculateImpact(symbol, side, qty, price)
-                    </div>
 
                     <div class="config-header" style="margin-top: 20px;">Liquidity Coefficients (K)</div>
                     <p style="margin-bottom: 15px; color: #666;">Higher K = More price movement per trade. Lower K = More stable (liquid) stock.</p>
@@ -1175,6 +1247,7 @@
         <div class="main-content">
             <div class="header">
                 <h1>EMPORIO 2025</h1>
+                <span style="opacity:0.4;">|</span>
                 <p>Joseph's Stock Exchange</p>
             </div>
 
@@ -1255,6 +1328,12 @@
             </div>
 
             <div class="stock-grid" id="stockGrid"></div>
+
+            <!-- Team Holdings Table -->
+            <div class="team-holdings-section" id="teamHoldingsSection">
+                <div class="holdings-title">📋 Team Holdings</div>
+                <div id="teamHoldingsTable"></div>
+            </div>
         </div>
 
         <!-- NEWS SIDEBAR -->
@@ -1273,6 +1352,34 @@
     </div>
 
     <script>
+        // ==================== EMBEDDED MARKET ENGINE ====================
+        window.MarketEngine = {
+            stockConfig: {
+                ADANIPORTS: { startPrice: 850.00, dailyVolume: 2_500_000, K: 1.05 },
+                LT: { startPrice: 3400.00, dailyVolume: 3_200_000, K: 1.00 },
+                JSWSTEEL: { startPrice: 820.00, dailyVolume: 8_500_000, K: 0.85 },
+                ONGC: { startPrice: 260.00, dailyVolume: 12_800_000, K: 0.75 },
+                TCS: { startPrice: 4100.00, dailyVolume: 1_800_000, K: 1.15 },
+                TITAN: { startPrice: 3600.00, dailyVolume: 2_800_000, K: 1.05 },
+                CEATLTD: { startPrice: 2800.00, dailyVolume: 680_000, K: 1.60 },
+                SBIN: { startPrice: 720.00, dailyVolume: 18_500_000, K: 0.70 },
+                NIFTY50: { startPrice: 21000.00, dailyVolume: 50_000_000, K: 0.50 }
+            },
+            params: {
+                depthFactor: 0.02,
+                perTradeImpactClamp: 0.025
+            },
+            calculateImpact(symbol, side, qty, price) {
+                const config = this.stockConfig[symbol];
+                if (!config) return 0;
+                const direction = side === 'BUY' ? 1 : -1;
+                const tradeValue = qty * price;
+                const liquidityValue = (config.dailyVolume * config.startPrice) * this.params.depthFactor;
+                const impact = direction * config.K * Math.sqrt(tradeValue / liquidityValue);
+                return Math.max(-this.params.perTradeImpactClamp, Math.min(this.params.perTradeImpactClamp, impact));
+            }
+        };
+
         // ==================== DATA MODELS ====================
         
         let teams = {
@@ -1306,7 +1413,7 @@
 
         // Market Engine Configuration
         const marketEngine = {
-            enabled: false, // Toggle in admin console
+            enabled: 'external', // Full Market Engine enabled by default
             config: {
                 ADANIPORTS: { dailyVolume: 2500000, K: 1.05 },
                 LT: { dailyVolume: 3200000, K: 1.00 },
@@ -1454,7 +1561,13 @@
                 const removeBtn = document.createElement('button');
                 removeBtn.className = 'btn-remove';
                 removeBtn.textContent = 'Remove';
-                removeBtn.onclick = () => removeTeam(name);
+                removeBtn.setAttribute('data-team', name);
+                removeBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const teamName = this.getAttribute('data-team');
+                    removeTeam(teamName);
+                });
                 
                 header.appendChild(nameInput);
                 header.appendChild(cashInput);
@@ -1512,12 +1625,21 @@
             renderTeamConfig();
         }
 
-        function removeTeam(name) {
-            if (Object.keys(teams).length <= 2) return alert('Need at least 2 teams!');
-            if (confirm(`Remove ${name}?`)) {
-                delete teams[name];
-                renderTeamConfig();
+        function removeTeam(teamName) {
+            const teamKeys = Object.keys(teams);
+            if (teamKeys.length <= 2) {
+                alert('Need at least 2 teams!');
+                return;
             }
+            if (!teams.hasOwnProperty(teamName)) {
+                alert('Team not found: ' + teamName);
+                return;
+            }
+            delete teams[teamName];
+            renderTeamConfig();
+            updateTeamDropdown();
+            updateLeaderboard();
+            renderTeamHoldings();
         }
 
         function saveTeamConfig() {
@@ -1698,11 +1820,11 @@
         function toggleMarketEngine() {
             const mode = document.getElementById('engineEnabled').value;
             if (mode === 'external') {
-                if (typeof window.MarketEngine !== 'undefined') {
+                if (typeof window.MarketEngine !== 'undefined' && window.MarketEngine.calculateImpact) {
                     marketEngine.enabled = 'external';
-                    alert('External Market Engine ENABLED - Using market_engine.js');
+                    alert('Market Engine ENABLED - Using embedded engine');
                 } else {
-                    alert('⚠️ External engine not found!\n\nTo use external engine:\n1. Add market_engine.js to your folder\n2. Uncomment the script tag at bottom of index.html');
+                    alert('⚠️ Market Engine not found!');
                     document.getElementById('engineEnabled').value = 'false';
                     marketEngine.enabled = false;
                 }
@@ -1815,6 +1937,38 @@
                 
                 container.appendChild(card);
             });
+
+            // Also update the team holdings table
+            renderTeamHoldings();
+        }
+
+        function renderTeamHoldings() {
+            const container = document.getElementById('teamHoldingsTable');
+            if (!container) return;
+
+            const teamNames = Object.keys(teams);
+            const allSymbols = ['NIFTY50', ...stocks.map(s => s.symbol)];
+            const symbolNames = { NIFTY50: indexFund.name };
+            stocks.forEach(s => symbolNames[s.symbol] = s.name);
+
+            let html = '<table class="holdings-table"><thead><tr><th>Team</th>';
+            allSymbols.forEach(sym => {
+                html += `<th>${sym}</th>`;
+            });
+            html += '<th>Cash</th></tr></thead><tbody>';
+
+            teamNames.forEach(name => {
+                const team = teams[name];
+                html += `<tr><td>${name}</td>`;
+                allSymbols.forEach(sym => {
+                    const qty = team.holdings[sym] || 0;
+                    html += `<td class="${qty === 0 ? 'holdings-zero' : ''}">${qty}</td>`;
+                });
+                html += `<td>₹${formatINR(team.cash)}</td></tr>`;
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
         }
 
         function updateIndexCard() {
@@ -1826,7 +1980,7 @@
                 <div class="index-card">
                     <div style="font-weight: bold; font-size: 1.1em; margin-bottom: 8px;">${indexFund.name}</div>
                     <div style="font-size: 1.5em; font-weight: bold; font-family: 'Courier New';">₹${indexFund.value.toFixed(2)}</div>
-                    <div style="font-size: 0.9em; font-weight: bold; color: ${isPos ? '#000' : '#666'};">
+                    <div style="font-size: 0.9em; font-weight: bold; color: ${isPos ? '#16a34a' : '#dc2626'};">
                         ${isPos ? '▲' : '▼'} ₹${Math.abs(change).toFixed(2)} (${isPos ? '+' : ''}${pct}%)
                     </div>
                 </div>
@@ -2225,9 +2379,9 @@
             }));
             
             const isPos = indexFund.value >= indexFund.open;
-            const color = isPos ? '#000' : '#666';
+            const color = isPos ? '#16a34a' : '#dc2626';
             
-            ctx.fillStyle = isPos ? 'rgba(0,0,0,0.05)' : 'rgba(102,102,102,0.05)';
+            ctx.fillStyle = isPos ? 'rgba(22,163,74,0.08)' : 'rgba(220,38,38,0.08)';
             ctx.beginPath();
             ctx.moveTo(points[0].x, height);
             points.forEach(p => ctx.lineTo(p.x, p.y));
@@ -2299,9 +2453,9 @@
             }));
             
             const isPos = stock.price >= stock.open;
-            const color = isPos ? '#000' : '#666';
+            const color = isPos ? '#16a34a' : '#dc2626';
             
-            ctx.fillStyle = isPos ? 'rgba(0,0,0,0.05)' : 'rgba(102,102,102,0.05)';
+            ctx.fillStyle = isPos ? 'rgba(22,163,74,0.08)' : 'rgba(220,38,38,0.08)';
             ctx.beginPath();
             ctx.moveTo(points[0].x, height);
             points.forEach(p => ctx.lineTo(p.x, p.y));
@@ -2547,10 +2701,9 @@
         updateIndexCard();
         renderTradeLog();
         renderOrderBook();
+        renderTeamHoldings();
     </script>
 
-    <!-- To use external market engine, uncomment: -->
-    <script src="market_engine.js"></script>
-   
+
 </body>
 </html>
