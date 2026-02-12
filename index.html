@@ -15,42 +15,409 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #ffffff;
             min-height: 100vh;
-            padding: 20px;
+            padding: 10px;
+            font-size: 14px;
         }
 
-        .container {
-            max-width: 1800px;
+        body.presentation-mode {
+            font-size: 16px;
+            padding: 5px;
+        }
+
+        body.presentation-mode .layout {
+            gap: 10px;
+        }
+
+        body.presentation-mode .stock-grid {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 260px 1fr 320px;
+            gap: 15px;
+            max-width: 100%;
             margin: 0 auto;
+            height: calc(100vh - 20px);
+        }
+
+        /* ADMIN BAR */
+        .admin-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #000000;
+            color: #ffffff;
+            padding: 8px 15px;
+            z-index: 10000;
             display: flex;
-            gap: 20px;
+            gap: 10px;
+            align-items: center;
+            justify-content: space-between;
         }
 
-        .main-content {
-            flex: 1;
-        }
-
-        .order-book-section {
-            background: #ffffff;
-            border: 2px solid #000000;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .order-book-section.collapsed .order-book-grid,
-        .order-book-section.collapsed .export-controls {
+        .admin-bar.hidden {
             display: none;
         }
 
-        .order-book-header {
+        body.admin-visible {
+            padding-top: 50px;
+        }
+
+        .admin-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .admin-btn {
+            padding: 6px 12px;
+            background: #ffffff;
+            color: #000000;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.85em;
+        }
+
+        .admin-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .admin-btn.active {
+            background: #4ade80;
+        }
+
+        /* MODAL */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10001;
+            overflow-y: auto;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #ffffff;
+            border: 4px solid #000000;
+            padding: 30px;
+            max-width: 1200px;
+            width: 95%;
+            max-height: 95vh;
+            overflow-y: auto;
+            box-shadow: 8px 8px 0 #000000;
+            margin: 20px;
+        }
+
+        .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #000000;
+        }
+
+        .modal-title {
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+
+        .close-btn {
+            background: #000000;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1em;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #000000;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: #f0f0f0;
+            border: 2px solid #000000;
+            border-bottom: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .tab.active {
+            background: #ffffff;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .config-section {
+            margin-bottom: 25px;
+            border: 2px solid #000000;
+            padding: 20px;
+            background: #f9f9f9;
+        }
+
+        .config-header {
+            font-size: 1.3em;
+            font-weight: bold;
             margin-bottom: 15px;
             padding-bottom: 10px;
             border-bottom: 2px solid #000000;
         }
 
-        .order-book-title {
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .config-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .config-item label {
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .config-item input,
+        .config-item textarea,
+        .config-item select {
+            padding: 8px;
+            border: 2px solid #000000;
+            font-size: 0.95em;
+        }
+
+        .config-item textarea {
+            min-height: 80px;
+            font-family: inherit;
+        }
+
+        .drift-grid {
+            display: grid;
+            grid-template-columns: 150px repeat(3, 1fr);
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .drift-grid.header {
+            font-weight: bold;
+            background: #000000;
+            color: #ffffff;
+            padding: 10px;
+        }
+
+        .drift-grid input {
+            padding: 6px;
+            border: 1px solid #000000;
+        }
+
+        .btn-save {
+            padding: 15px 30px;
+            background: #000000;
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1em;
+            width: 100%;
+        }
+
+        .btn-save:hover {
+            background: #333333;
+        }
+
+        .btn-add {
+            padding: 12px 24px;
+            background: #4ade80;
+            color: #000000;
+            border: 2px solid #000000;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .btn-remove {
+            padding: 8px 16px;
+            background: #ff4444;
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* LEADERBOARD */
+        .leaderboard {
+            background: #ffffff;
+            border: 2px solid #000000;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        .leaderboard-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #000000;
+        }
+
+        .team-card {
+            background: #f9f9f9;
+            border: 2px solid #000000;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+
+        .team-card.rank-1 {
+            background: #fff4e6;
+            border: 3px solid #000000;
+        }
+
+        .team-rank {
+            font-size: 1.5em;
+            font-weight: bold;
+            float: right;
+        }
+
+        .team-name {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 8px;
+        }
+
+        .team-stats {
+            font-size: 0.85em;
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+        }
+
+        .team-networth {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #000000;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            overflow-y: auto;
+        }
+
+        .header {
+            background: #000000;
+            color: #ffffff;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 15px;
+            border: 2px solid #000000;
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+        }
+
+        .session-info {
+            background: #000000;
+            color: #ffffff;
+            padding: 12px;
+            text-align: center;
+            margin-bottom: 15px;
+            border: 2px solid #000000;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .session-label, .market-clock, .market-status {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .market-status.open { color: #4ade80; }
+        .market-status.closing { color: #fbbf24; }
+        .market-status.closed { color: #f87171; }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            font-size: 1em;
+            border: 2px solid #000000;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background: #000000;
+            color: #ffffff;
+        }
+
+        .btn-success {
+            background: #ffffff;
+            color: #000000;
+        }
+
+        /* TRADE ENTRY */
+        .trade-section {
+            background: #ffffff;
+            border: 2px solid #000000;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .trade-section.collapsed .trade-content {
+            display: none;
+        }
+
+        .trade-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #000000;
+        }
+
+        .trade-title {
             font-size: 1.3em;
             font-weight: bold;
         }
@@ -62,263 +429,87 @@
             border: none;
             cursor: pointer;
             font-weight: bold;
-            font-size: 0.9em;
         }
 
-        .toggle-btn:hover {
-            background: #333333;
-        }
-
-        .order-book-grid {
+        .trade-form {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .company-order-book {
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+            padding: 12px;
+            background: #f5f5f5;
             border: 1px solid #000000;
-            padding: 10px;
-            background: #f9f9f9;
         }
 
-        .company-order-book h4 {
-            margin: 0 0 10px 0;
-            padding-bottom: 5px;
-            border-bottom: 1px solid #000000;
-            font-size: 1em;
-        }
-
-        .transaction-row {
-            display: grid;
-            grid-template-columns: 40px 60px 80px 80px 90px;
-            gap: 5px;
-            margin-bottom: 8px;
-            align-items: center;
-        }
-
-        .transaction-row label {
-            font-size: 0.75em;
+        .trade-form label {
             font-weight: bold;
+            font-size: 0.85em;
+            display: block;
+            margin-bottom: 4px;
         }
 
-        .transaction-input {
-            padding: 4px;
+        .trade-form select,
+        .trade-form input {
+            padding: 6px;
             border: 1px solid #000000;
-            font-size: 0.85em;
+            font-size: 0.9em;
             width: 100%;
         }
 
-        .transaction-input:focus {
-            outline: 2px solid #000000;
-        }
-
-        .transaction-input[readonly] {
-            background: #e5e5e5;
-            border: 1px solid #666;
-        }
-
-        .current-price-display {
+        .trade-form button {
+            padding: 8px 16px;
             background: #000000;
             color: #ffffff;
-            padding: 8px;
-            text-align: center;
+            border: none;
+            cursor: pointer;
             font-weight: bold;
-            margin-top: 10px;
-            font-size: 0.9em;
+            align-self: end;
         }
 
-        .export-controls {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 15px;
-        }
-
-        .history-sidebar {
-            width: 350px;
-            background: #ffffff;
-            border: 2px solid #000000;
-            padding: 20px;
-            max-height: calc(100vh - 40px);
+        .trades-log {
+            max-height: 250px;
             overflow-y: auto;
-            position: sticky;
-            top: 20px;
-        }
-
-        .history-title {
-            font-size: 1.3em;
-            font-weight: bold;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #000000;
-        }
-
-        .history-item {
-            background: #f5f5f5;
             border: 1px solid #000000;
-            padding: 15px;
-            margin-bottom: 15px;
-            transition: all 0.3s ease;
+            background: #fafafa;
         }
 
-        .history-item:hover {
-            background: #e5e5e5;
-        }
-
-        .history-item.new {
-            animation: slideIn 0.5s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        .history-company {
-            font-weight: bold;
-            margin-bottom: 5px;
-            font-size: 1.1em;
-        }
-
-        .history-impact {
-            font-size: 0.9em;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-
-        .history-impact.positive {
-            color: #000000;
-        }
-
-        .history-impact.negative {
-            color: #666666;
-        }
-
-        .history-text {
+        .trade-row {
+            display: grid;
+            grid-template-columns: 100px 100px 60px 80px 100px 100px;
+            gap: 8px;
+            padding: 8px;
+            border-bottom: 1px solid #e5e5e5;
             font-size: 0.85em;
-            line-height: 1.4;
-            color: #333333;
+            font-family: 'Courier New', monospace;
         }
 
-        .history-time {
-            font-size: 0.75em;
-            color: #666666;
-            margin-top: 8px;
-            font-style: italic;
-        }
-
-        .no-history {
-            text-align: center;
-            color: #666666;
-            padding: 20px;
-            font-style: italic;
-        }
-
-        .header {
-            text-align: center;
-            color: #000000;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: #ffffff;
-            border: 2px solid #000000;
-            border-radius: 0;
-        }
-
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-
-        .header h2 {
-            font-size: 1.5em;
-            font-weight: 300;
-            color: #333333;
-        }
-
-        .flash-news-container {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0);
+        .trade-row.header {
             background: #000000;
-            padding: 40px;
-            border-radius: 0;
-            box-shadow: 0 0 0 3px #000000;
-            z-index: 1000;
-            max-width: 600px;
-            opacity: 0;
-            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-
-        .flash-news-container.show {
-            transform: translate(-50%, -50%) scale(1);
-            opacity: 1;
-        }
-
-        .flash-news-header {
             color: #ffffff;
-            font-size: 2em;
             font-weight: bold;
-            margin-bottom: 10px;
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+            position: sticky;
+            top: 0;
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
+        .trade-row.buy { background: #f0f0f0; }
+        .trade-row.sell { background: #ffffff; }
 
-        .flash-news-company {
-            color: #ffffff;
-            font-size: 1.5em;
-            font-weight: bold;
-            margin-bottom: 15px;
-            text-align: center;
-            border-bottom: 2px solid #ffffff;
-            padding-bottom: 10px;
-        }
-
-        .flash-news-text {
-            color: #ffffff;
-            font-size: 1.1em;
-            line-height: 1.6;
-            text-align: center;
-        }
-
+        /* STOCK GRID */
         .stock-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
         }
 
         .stock-card {
             background: #ffffff;
             border: 2px solid #000000;
-            border-radius: 0;
-            padding: 25px;
+            padding: 15px;
             box-shadow: 4px 4px 0 #000000;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stock-card:hover {
-            transform: translate(-2px, -2px);
-            box-shadow: 6px 6px 0 #000000;
         }
 
         .stock-card.flash {
-            animation: flashCard 1s ease-in-out;
+            animation: flashCard 0.5s ease-in-out;
         }
 
         @keyframes flashCard {
@@ -326,250 +517,373 @@
             50% { background: #f0f0f0; }
         }
 
-        .stock-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
+        .mini-chart-container {
+            margin: 10px 0;
+            height: 60px;
+            position: relative;
+            border: 1px solid #e5e5e5;
+            background: #fafafa;
+        }
+
+        .mini-chart {
+            width: 100%;
+            height: 100%;
         }
 
         .company-name {
-            font-size: 1.4em;
+            font-size: 1.2em;
             font-weight: bold;
-            color: #333;
         }
 
         .stock-symbol {
-            font-size: 0.9em;
+            font-size: 0.85em;
             color: #666;
-            background: #f0f0f0;
-            padding: 4px 10px;
-            border-radius: 12px;
-        }
-
-        .price-section {
-            margin: 20px 0;
         }
 
         .current-price {
-            font-size: 2.5em;
+            font-size: 1.8em;
             font-weight: bold;
-            color: #333;
-            margin-bottom: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 8px 0;
         }
 
         .price-change {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1.1em;
-            font-weight: 600;
+            font-size: 1em;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
         }
 
-        .price-change.positive {
-            color: #000000;
-        }
-
-        .price-change.negative {
-            color: #666666;
-        }
-
-        .arrow {
-            font-size: 1.5em;
-        }
+        .price-change.positive { color: #000000; }
+        .price-change.negative { color: #666666; }
 
         .stats {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 2px solid #000000;
-        }
-
-        .stat {
-            text-align: center;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #e5e5e5;
+            font-size: 0.85em;
         }
 
         .stat-label {
-            font-size: 0.85em;
             color: #666;
-            margin-bottom: 5px;
         }
 
         .stat-value {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .session-info {
-            background: #000000;
-            color: #ffffff;
-            padding: 15px;
-            border-radius: 0;
-            text-align: center;
-            margin-bottom: 20px;
-            border: 2px solid #000000;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-
-        .time-controls {
-            background: #ffffff;
-            border: 2px solid #000000;
-            padding: 15px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .time-controls label {
-            font-weight: bold;
-            color: #000000;
-        }
-
-        .time-slider {
-            flex: 1;
-            height: 8px;
-            -webkit-appearance: none;
-            appearance: none;
-            background: #e5e5e5;
-            outline: none;
-            border: 1px solid #000000;
-        }
-
-        .time-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            background: #000000;
-            cursor: pointer;
-        }
-
-        .time-slider::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            background: #000000;
-            cursor: pointer;
-            border: none;
-        }
-
-        .speed-display {
-            font-weight: bold;
-            color: #000000;
-            min-width: 80px;
-        }
-
-        .session-label {
-            font-size: 1.2em;
-            font-weight: bold;
-        }
-
-        .market-clock {
-            font-size: 1.5em;
             font-weight: bold;
             font-family: 'Courier New', monospace;
-            letter-spacing: 2px;
         }
 
-        .market-status {
-            font-size: 0.9em;
-            padding: 5px 15px;
+        /* NEWS SIDEBAR */
+        .news-sidebar {
             background: #ffffff;
-            color: #000000;
-            border: 1px solid #000000;
-        }
-
-        .market-status.open {
-            background: #4ade80;
-        }
-
-        .market-status.closing {
-            background: #fbbf24;
-        }
-
-        .market-status.closed {
-            background: #ef4444;
-            color: #ffffff;
-        }
-
-        .controls {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-        }
-
-        .btn {
-            padding: 12px 25px;
             border: 2px solid #000000;
-            border-radius: 0;
-            font-size: 1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            color: #000000;
-            background: #ffffff;
+            padding: 15px;
+            overflow-y: auto;
         }
 
-        .btn-primary {
-            background: #000000;
-            color: #ffffff;
+        .news-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #000000;
         }
 
-        .btn-primary:hover {
-            background: #333333;
+        .news-item {
+            background: #f9f9f9;
+            border: 1px solid #000000;
+            padding: 12px;
+            margin-bottom: 12px;
+            font-size: 0.85em;
         }
 
-        .btn-success {
-            background: #ffffff;
-            color: #000000;
+        .news-company {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 6px;
         }
 
-        .btn-success:hover {
-            background: #f0f0f0;
+        .news-text {
+            line-height: 1.5;
+            margin-bottom: 6px;
         }
 
-        .overlay {
+        .news-time {
+            font-size: 0.8em;
+            color: #666;
+        }
+
+        /* FLASH NEWS */
+        .flash-overlay {
             position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 999;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
         }
 
-        .overlay.show {
-            opacity: 1;
-            pointer-events: all;
+        .flash-overlay.show {
+            display: flex;
+        }
+
+        .flash-news {
+            background: #ffffff;
+            border: 4px solid #000000;
+            padding: 40px;
+            max-width: 800px;
+            box-shadow: 8px 8px 0 #000000;
+        }
+
+        .flash-company {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .flash-text {
+            font-size: 1.2em;
+            line-height: 1.8;
+        }
+
+        /* INDEX FUND CARD */
+        .index-card {
+            background: #fff4e6;
+            border: 3px solid #000000;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 4px 4px 0 #000000;
         }
     </style>
 </head>
-<body>
-    <div class="overlay" id="overlay"></div>
-    
-    <div class="flash-news-container" id="flashNews">
-        <div class="flash-news-header">📰 FLASH NEWS 📰</div>
-        <div class="flash-news-company" id="newsCompany"></div>
-        <div class="flash-news-text" id="newsText"></div>
+<body class="admin-visible">
+    <!-- Admin Bar -->
+    <div class="admin-bar" id="adminBar">
+        <div class="admin-controls">
+            <button class="admin-btn" onclick="openAdminConsole('teams')">👥 Teams</button>
+            <button class="admin-btn" onclick="openAdminConsole('drift')">📈 Drift</button>
+            <button class="admin-btn" onclick="openAdminConsole('news')">📰 News</button>
+            <button class="admin-btn" onclick="openAdminConsole('index')">📊 Index Fund</button>
+            <button class="admin-btn" onclick="openAdminConsole('engine')">⚙️ Engine</button>
+        </div>
+        <div class="admin-controls">
+            <label style="color: #fff;">Presentation Mode:</label>
+            <input type="checkbox" id="presentationMode" onchange="togglePresentationMode()">
+            <button class="admin-btn" onclick="toggleAdminBar()">🔒 Lock & Hide</button>
+        </div>
     </div>
 
-    <div class="container">
+    <!-- Admin Console Modal -->
+    <div class="modal" id="adminModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Admin Console</div>
+                <button class="close-btn" onclick="closeAdminConsole()">✕ Close</button>
+            </div>
+
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('teams')">Teams</div>
+                <div class="tab" onclick="switchTab('drift')">Price Drift</div>
+                <div class="tab" onclick="switchTab('news')">Flash News</div>
+                <div class="tab" onclick="switchTab('index')">Index Fund</div>
+                <div class="tab" onclick="switchTab('engine')">Market Engine</div>
+            </div>
+
+            <!-- TEAMS TAB -->
+            <div class="tab-content active" id="tab-teams">
+                <button class="btn-add" onclick="addTeam()">+ Add New Team</button>
+                <div id="teamConfigContainer"></div>
+                <button class="btn-save" onclick="saveTeamConfig()">💾 Save Teams</button>
+            </div>
+
+            <!-- DRIFT TAB -->
+            <div class="tab-content" id="tab-drift">
+                <div class="config-section">
+                    <div class="config-header">Session 1 - Drift Ranges</div>
+                    <div class="drift-grid header">
+                        <div>Stock</div>
+                        <div>Min %</div>
+                        <div>Max %</div>
+                        <div>Mid %</div>
+                    </div>
+                    <div id="drift-session-1"></div>
+                </div>
+                
+                <div class="config-section">
+                    <div class="config-header">Session 2 - Drift Ranges</div>
+                    <div class="drift-grid header">
+                        <div>Stock</div>
+                        <div>Min %</div>
+                        <div>Max %</div>
+                        <div>Mid %</div>
+                    </div>
+                    <div id="drift-session-2"></div>
+                </div>
+                
+                <div class="config-section">
+                    <div class="config-header">Session 3 - Drift Ranges</div>
+                    <div class="drift-grid header">
+                        <div>Stock</div>
+                        <div>Min %</div>
+                        <div>Max %</div>
+                        <div>Mid %</div>
+                    </div>
+                    <div id="drift-session-3"></div>
+                </div>
+                
+                <button class="btn-save" onclick="saveDriftConfig()">💾 Save Drift Config</button>
+            </div>
+
+            <!-- NEWS TAB -->
+            <div class="tab-content" id="tab-news">
+                <div class="config-section">
+                    <div class="config-header">Session 1 - Flash News</div>
+                    <div id="news-session-1"></div>
+                </div>
+                
+                <div class="config-section">
+                    <div class="config-header">Session 2 - Flash News</div>
+                    <div id="news-session-2"></div>
+                </div>
+                
+                <div class="config-section">
+                    <div class="config-header">Session 3 - Flash News</div>
+                    <div id="news-session-3"></div>
+                </div>
+                
+                <button class="btn-save" onclick="saveNewsConfig()">💾 Save News</button>
+            </div>
+
+            <!-- INDEX FUND TAB -->
+            <div class="tab-content" id="tab-index">
+                <div class="config-section">
+                    <div class="config-header">Index Fund Configuration</div>
+                    <div class="config-grid">
+                        <div class="config-item">
+                            <label>Index Name</label>
+                            <input type="text" id="indexName" value="NIFTY 50">
+                        </div>
+                        <div class="config-item">
+                            <label>Starting Value</label>
+                            <input type="number" id="indexStart" value="21000">
+                        </div>
+                    </div>
+                    
+                    <div class="config-header" style="margin-top: 20px;">Session Drift</div>
+                    <div class="config-grid">
+                        <div class="config-item">
+                            <label>Session 1 Drift (%)</label>
+                            <input type="number" id="indexDrift1" value="0.5" step="0.1">
+                        </div>
+                        <div class="config-item">
+                            <label>Session 2 Drift (%)</label>
+                            <input type="number" id="indexDrift2" value="-0.3" step="0.1">
+                        </div>
+                        <div class="config-item">
+                            <label>Session 3 Drift (%)</label>
+                            <input type="number" id="indexDrift3" value="0.8" step="0.1">
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-save" onclick="saveIndexConfig()">💾 Save Index Fund</button>
+            </div>
+
+            <!-- MARKET ENGINE TAB -->
+            <div class="tab-content" id="tab-engine">
+                <div class="config-section">
+                    <div class="config-header">Market Engine Settings</div>
+                    <div class="config-grid">
+                        <div class="config-item">
+                            <label>Engine Mode</label>
+                            <select id="engineEnabled" onchange="toggleMarketEngine()">
+                                <option value="false">Disabled (Simple Mode)</option>
+                                <option value="true">Built-in Engine</option>
+                                <option value="external">External Engine (market_engine.js)</option>
+                            </select>
+                        </div>
+                        <div class="config-item">
+                            <label>Depth Factor</label>
+                            <input type="number" id="engineDepth" value="0.02" step="0.001">
+                        </div>
+                        <div class="config-item">
+                            <label>Impact Clamp (%)</label>
+                            <input type="number" id="engineClamp" value="2.5" step="0.1">
+                        </div>
+                    </div>
+                    
+                    <div style="margin: 15px 0; padding: 15px; background: #fff4e6; border: 2px solid #000;">
+                        <strong>External Engine Instructions:</strong><br>
+                        1. Place <code>market_engine.js</code> in same folder as index.html<br>
+                        2. Select "External Engine" mode above<br>
+                        3. The external engine will override built-in calculations<br>
+                        4. External engine must expose: <code>MarketEngine.calculateImpact(symbol, side, qty, price)</code>
+                    </div>
+
+                    <div class="config-header" style="margin-top: 20px;">Liquidity Coefficients (K)</div>
+                    <p style="margin-bottom: 15px; color: #666;">Higher K = More price movement per trade. Lower K = More stable (liquid) stock.</p>
+                    <div class="config-grid">
+                        <div class="config-item">
+                            <label>NIFTY50 (K)</label>
+                            <input type="number" id="engineK-NIFTY50" value="0.50" step="0.05">
+                        </div>
+                        <div class="config-item">
+                            <label>ADANIPORTS (K)</label>
+                            <input type="number" id="engineK-ADANIPORTS" value="1.05" step="0.05">
+                        </div>
+                        <div class="config-item">
+                            <label>LT (K)</label>
+                            <input type="number" id="engineK-LT" value="1.00" step="0.05">
+                        </div>
+                        <div class="config-item">
+                            <label>JSWSTEEL (K)</label>
+                            <input type="number" id="engineK-JSWSTEEL" value="0.85" step="0.05">
+                        </div>
+                        <div class="config-item">
+                            <label>ONGC (K)</label>
+                            <input type="number" id="engineK-ONGC" value="0.75" step="0.05">
+                        </div>
+                        <div class="config-item">
+                            <label>TCS (K)</label>
+                            <input type="number" id="engineK-TCS" value="1.15" step="0.05">
+                        </div>
+                        <div class="config-item">
+                            <label>TITAN (K)</label>
+                            <input type="number" id="engineK-TITAN" value="1.05" step="0.05">
+                        </div>
+                        <div class="config-item">
+                            <label>CEAT (K)</label>
+                            <input type="number" id="engineK-CEATLTD" value="1.60" step="0.05">
+                        </div>
+                        <div class="config-item">
+                            <label>SBI (K)</label>
+                            <input type="number" id="engineK-SBIN" value="0.70" step="0.05">
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-save" onclick="saveEngineConfig()">💾 Save Engine Config</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="layout">
+        <!-- LEADERBOARD -->
+        <div class="leaderboard">
+            <div class="leaderboard-title">🏆 Leaderboard</div>
+            <div id="indexFundCard"></div>
+            <div id="leaderboardContent"></div>
+        </div>
+
+        <!-- MAIN CONTENT -->
         <div class="main-content">
             <div class="header">
-                <h1>🏛️ EMPORIO 2025</h1>
-                <h2>Joseph's Stock Exchange</h2>
+                <h1>EMPORIO 2025</h1>
+                <p>Joseph's Stock Exchange</p>
             </div>
 
             <div class="session-info">
@@ -578,689 +892,756 @@
                 <div class="market-status open" id="marketStatus">MARKET OPEN</div>
             </div>
 
-            <div class="time-controls">
-                <label>⚡ Time Speed:</label>
-                <input type="range" min="1" max="100" value="1" class="time-slider" id="timeSlider" oninput="updateTimeSpeed(this.value)">
-                <span class="speed-display" id="speedDisplay">1x (Real-time)</span>
-            </div>
-
             <div class="controls">
                 <button class="btn btn-primary" id="startBtn" onclick="startSession()">Start Session</button>
+                <button class="btn btn-primary" id="skipBtn" onclick="skipToEnd()" disabled>⏭️ Skip</button>
                 <button class="btn btn-success" id="nextBtn" onclick="nextSession()" disabled>Next Session</button>
             </div>
 
-            <div class="order-book-section" id="orderBookSection">
-                <div class="order-book-header">
-                    <div class="order-book-title">📊 Order Book - Live Transactions</div>
-                    <button class="toggle-btn" onclick="toggleOrderBook()">
-                        <span id="toggleText">▼ Hide</span>
+            <div class="trade-section" id="tradeSection">
+                <div class="trade-header">
+                    <div class="trade-title">📊 Trade Entry</div>
+                    <button class="toggle-btn" onclick="toggleTrades()">
+                        <span id="toggleTradeText">▼</span>
                     </button>
                 </div>
-                <div class="order-book-grid" id="orderBookGrid"></div>
-                <div class="export-controls">
-                    <button class="btn btn-success" onclick="exportToExcel()">📥 Export to Excel</button>
-                    <button class="btn btn-primary" onclick="clearAllTransactions()">🗑️ Clear All</button>
+                <div class="trade-content">
+                    <div class="trade-form">
+                        <div>
+                            <label>Team</label>
+                            <select id="tradeTeam"></select>
+                        </div>
+                        <div>
+                            <label>Stock</label>
+                            <select id="tradeStock"></select>
+                        </div>
+                        <div>
+                            <label>Side</label>
+                            <select id="tradeSide">
+                                <option value="BUY">BUY</option>
+                                <option value="SELL">SELL</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Qty</label>
+                            <input type="number" id="tradeQty" placeholder="100" min="1">
+                        </div>
+                        <div>
+                            <label>Price (₹)</label>
+                            <input type="number" id="tradePrice" placeholder="850" step="0.01">
+                        </div>
+                        <div>
+                            <button onclick="executeTrade()">Execute</button>
+                        </div>
+                    </div>
+                    
+                    <div class="trades-log">
+                        <div class="trade-row header">
+                            <div>Team</div>
+                            <div>Stock</div>
+                            <div>Side</div>
+                            <div>Qty</div>
+                            <div>Price</div>
+                            <div>Time</div>
+                        </div>
+                        <div id="tradesLogContent"></div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <button class="btn btn-success" onclick="exportTrades()">📥 Export</button>
+                        <button class="btn" onclick="clearTrades()">🗑️ Clear</button>
+                    </div>
                 </div>
             </div>
 
             <div class="stock-grid" id="stockGrid"></div>
         </div>
 
-        <div class="history-sidebar">
-            <div class="history-title">📜 Flash News History</div>
-            <div id="historyContainer">
-                <div class="no-history">No news yet. Click "Start Flash News" to begin.</div>
-            </div>
+        <!-- NEWS SIDEBAR -->
+        <div class="news-sidebar">
+            <div class="news-title">📰 News Feed</div>
+            <div id="newsHistory"></div>
+        </div>
+    </div>
+
+    <!-- Flash News -->
+    <div class="flash-overlay" id="flashOverlay">
+        <div class="flash-news">
+            <div class="flash-company" id="flashCompany"></div>
+            <div class="flash-text" id="flashText"></div>
         </div>
     </div>
 
     <script>
-        // Stock data with initial prices (exact starting values as specified)
+        // ==================== DATA MODELS ====================
+        
+        let teams = {
+            'Team A': { cash: 500000, holdings: {} },
+            'Team B': { cash: 500000, holdings: {} },
+            'Team C': { cash: 500000, holdings: {} },
+            'Team D': { cash: 500000, holdings: {} },
+            'Team E': { cash: 500000, holdings: {} }
+        };
+
         const stocks = [
-            { 
-                name: 'Adani Ports', 
-                symbol: 'ADANIPORTS', 
-                price: 850.00, 
-                open: 850.00,
-                high: 852.50,
-                low: 847.80,
-                volume: '2.5M'
-            },
-            { 
-                name: 'L&T', 
-                symbol: 'LT', 
-                price: 3400.00, 
-                open: 3400.00,
-                high: 3408.75,
-                low: 3392.30,
-                volume: '3.2M'
-            },
-            { 
-                name: 'JSW Steel', 
-                symbol: 'JSWSTEEL', 
-                price: 820.00, 
-                open: 820.00,
-                high: 823.60,
-                low: 816.45,
-                volume: '8.5M'
-            },
-            { 
-                name: 'ONGC', 
-                symbol: 'ONGC', 
-                price: 260.00, 
-                open: 260.00,
-                high: 261.85,
-                low: 258.20,
-                volume: '12.8M'
-            },
-            { 
-                name: 'TCS', 
-                symbol: 'TCS', 
-                price: 4100.00, 
-                open: 4100.00,
-                high: 4112.50,
-                low: 4088.90,
-                volume: '1.8M'
-            },
-            { 
-                name: 'Titan', 
-                symbol: 'TITAN', 
-                price: 3600.00, 
-                open: 3600.00,
-                high: 3614.80,
-                low: 3587.25,
-                volume: '2.8M'
-            },
-            { 
-                name: 'CEAT', 
-                symbol: 'CEATLTD', 
-                price: 2800.00, 
-                open: 2800.00,
-                high: 2811.40,
-                low: 2788.65,
-                volume: '680K'
-            },
-            { 
-                name: 'State Bank of India', 
-                symbol: 'SBIN', 
-                price: 720.00, 
-                open: 720.00,
-                high: 723.90,
-                low: 716.35,
-                volume: '18.5M'
-            }
+            { name: 'Adani Ports', symbol: 'ADANIPORTS', price: 850.00, open: 850.00, volume: '2.5M', priceHistory: [850.00] },
+            { name: 'L&T', symbol: 'LT', price: 3400.00, open: 3400.00, volume: '3.2M', priceHistory: [3400.00] },
+            { name: 'JSW Steel', symbol: 'JSWSTEEL', price: 820.00, open: 820.00, volume: '8.5M', priceHistory: [820.00] },
+            { name: 'ONGC', symbol: 'ONGC', price: 260.00, open: 260.00, volume: '12.8M', priceHistory: [260.00] },
+            { name: 'TCS', symbol: 'TCS', price: 4100.00, open: 4100.00, volume: '1.8M', priceHistory: [4100.00] },
+            { name: 'Titan', symbol: 'TITAN', price: 3600.00, open: 3600.00, volume: '2.8M', priceHistory: [3600.00] },
+            { name: 'CEAT', symbol: 'CEATLTD', price: 2800.00, open: 2800.00, volume: '680K', priceHistory: [2800.00] },
+            { name: 'State Bank of India', symbol: 'SBIN', price: 720.00, open: 720.00, volume: '18.5M', priceHistory: [720.00] }
         ];
 
-        // Flash news from PowerPoint
-        const flashNewsData = [
-            // Session 1 - Chaotic Open (Immediate swings, not everyone wins)
-            {
-                session: 1,
-                company: 'ADANIPORTS',
-                news: 'Overseas terminal operations stabilise, but initial throughput ramp-up remains uneven across routes.',
-                impact: 3.0
+        let indexFund = {
+            name: 'NIFTY 50',
+            symbol: 'NIFTY50',
+            value: 21000,
+            open: 21000,
+            drift: { 1: 0.5, 2: -0.3, 3: 0.8 },
+            history: [21000],
+            volume: '500M'
+        };
+
+        // Market Engine Configuration
+        const marketEngine = {
+            enabled: false, // Toggle in admin console
+            config: {
+                ADANIPORTS: { dailyVolume: 2_500_000, K: 1.05 },
+                LT: { dailyVolume: 3_200_000, K: 1.00 },
+                JSWSTEEL: { dailyVolume: 8_500_000, K: 0.85 },
+                ONGC: { dailyVolume: 12_800_000, K: 0.75 },
+                TCS: { dailyVolume: 1_800_000, K: 1.15 },
+                TITAN: { dailyVolume: 2_800_000, K: 1.05 },
+                CEATLTD: { dailyVolume: 680_000, K: 1.60 },
+                SBIN: { dailyVolume: 18_500_000, K: 0.70 },
+                NIFTY50: { dailyVolume: 50_000_000, K: 0.50 }
             },
-            {
-                session: 1,
-                company: 'LT',
-                news: 'Secures a large infrastructure contract, though early capital deployment requirements are high.',
-                impact: -2.0
-            },
-            {
-                session: 1,
-                company: 'JSWSTEEL',
-                news: 'Production optimisation boosts output efficiency across key facilities.',
-                impact: 4.0
-            },
-            {
-                session: 1,
-                company: 'ONGC',
-                news: 'New offshore exploration plan announced, but execution timelines remain uncertain.',
-                impact: -3.0
-            },
-            {
-                session: 1,
-                company: 'TCS',
-                news: 'Wins multiple enterprise AI deals but faces pricing competition from global tech firms.',
-                impact: 2.0
-            },
-            {
-                session: 1,
-                company: 'TITAN',
-                news: 'Premium jewellery demand steady, but gold price volatility affecting customer buying behaviour.',
-                impact: -2.0
-            },
-            {
-                session: 1,
-                company: 'CEATLTD',
-                news: 'Capacity expansion plans announced to support growing auto demand.',
-                impact: 3.0
-            },
-            {
-                session: 1,
-                company: 'SBIN',
-                news: 'Credit growth strong, but liquidity tightening concerns emerging in banking sector.',
-                impact: -1.0
-            },
-            // Session 2 - Reversal Day (Winners become losers, losers recover)
-            {
-                session: 2,
-                company: 'ADANIPORTS',
-                news: 'Logistics demand remains strong, but higher port handling costs being reported.',
-                impact: -2.0
-            },
-            {
-                session: 2,
-                company: 'LT',
-                news: 'Execution progress on infrastructure projects improves confidence among investors.',
-                impact: 4.0
-            },
-            {
-                session: 2,
-                company: 'JSWSTEEL',
-                news: 'Rising raw material costs begin affecting margin expectations across steel producers.',
-                impact: -3.0
-            },
-            {
-                session: 2,
-                company: 'ONGC',
-                news: 'Exploration activity gains momentum with new geological data insights.',
-                impact: 3.0
-            },
-            {
-                session: 2,
-                company: 'TCS',
-                news: 'Global IT spending outlook stabilises, supporting deal pipeline strength.',
-                impact: 2.0
-            },
-            {
-                session: 2,
-                company: 'TITAN',
-                news: 'Retail sales momentum improves in urban markets with rising premium demand.',
-                impact: 3.0
-            },
-            {
-                session: 2,
-                company: 'CEATLTD',
-                news: 'Freight and rubber costs increase, putting pressure on operational margins.',
-                impact: -2.0
-            },
-            {
-                session: 2,
-                company: 'SBIN',
-                news: 'Institutional inflows support banking stocks amid improving lending sentiment.',
-                impact: 2.0
-            },
-            // Session 3 - Final Session (Volatile as hell)
-            {
-                session: 3,
-                company: 'ADANIPORTS',
-                news: 'Cargo volumes surge across key terminals, strengthening logistics outlook.',
-                impact: 5.0
-            },
-            {
-                session: 3,
-                company: 'LT',
-                news: 'Market chatter highlights project execution risks and possible margin compression.',
-                impact: -4.0
-            },
-            {
-                session: 3,
-                company: 'JSWSTEEL',
-                news: 'Demand outlook improves slightly as infrastructure spending picks up.',
-                impact: 3.0
-            },
-            {
-                session: 3,
-                company: 'ONGC',
-                news: 'Energy price fluctuations create uncertainty in upstream planning decisions.',
-                impact: -3.0
-            },
-            {
-                session: 3,
-                company: 'TCS',
-                news: 'Major enterprise contract announcement boosts sentiment late in the session.',
-                impact: 4.0
-            },
-            {
-                session: 3,
-                company: 'TITAN',
-                news: 'Sudden spike in festive jewellery demand drives strong late buying.',
-                impact: 5.0
-            },
-            {
-                session: 3,
-                company: 'CEATLTD',
-                news: 'Export orders increase unexpectedly, improving near-term business outlook.',
-                impact: 3.0
-            },
-            {
-                session: 3,
-                company: 'SBIN',
-                news: 'Funding cost pressures intensify across the banking system.',
-                impact: -3.0
+            params: {
+                depthFactor: 0.02,
+                impactClamp: 0.025
             }
+        };
+
+        let flashNewsData = [
+            { session: 1, company: 'ADANIPORTS', news: 'Adani Ports reported Q3 revenue of ₹7,980 crore (+13% YoY) with EBITDA margin at 50.1%, while net debt rose to ₹51,900 crore following ₹3,000 crore capex during the quarter.', driftMin: -0.6, driftMax: 0.8, driftMid: 0.1 },
+            { session: 1, company: 'LT', news: 'L&T recorded order inflows of ₹70,200 crore, taking its backlog to ₹4.66 lakh crore, though operating cash flow remained negative due to ₹7,600 crore rise in receivables.', driftMin: -0.8, driftMax: 0.9, driftMid: 0.1 },
+            { session: 1, company: 'TITAN', news: 'Titan posted 15% revenue growth to ₹11,150 crore with EBITDA margin at 12.8%, while inventory days increased to 159 from 146 last quarter.', driftMin: -0.7, driftMax: 1.0, driftMid: 0.2 },
+            { session: 1, company: 'JSWSTEEL', news: 'JSW Steel reported EBITDA of ₹6,080 crore (margin 18.9%), down 120 bps QoQ, even as net debt declined marginally to ₹62,300 crore.', driftMin: -1.6, driftMax: -0.4, driftMid: -1.0 },
+            { session: 1, company: 'ONGC', news: 'ONGC realized $79/bbl crude with net profit up 8% YoY, though production volumes fell 2.5% and quarterly capex stood at ₹8,500 crore.', driftMin: -1.0, driftMax: 0.6, driftMid: -0.2 },
+            { session: 1, company: 'TCS', news: 'TCS delivered ₹59,400 crore revenue (+8% YoY) with operating margin steady at 24.2%, while employee costs rose 11% year-on-year.', driftMin: 0.6, driftMax: 1.8, driftMid: 1.2 },
+            { session: 1, company: 'CEATLTD', news: 'CEAT revenue grew 9% YoY to ₹3,040 crore, but EBITDA margin contracted to 11.2% as finance costs rose 18%.', driftMin: -2.8, driftMax: -1.2, driftMid: -2.0 },
+            { session: 1, company: 'SBIN', news: 'SBI reported NII of ₹41,500 crore (+17% YoY) with NIM at 3.42%, while unsecured retail advances grew 16% year-on-year.', driftMin: 0.7, driftMax: 1.9, driftMid: 1.3 },
+            { session: 2, company: 'ADANIPORTS', news: 'The company approved ₹9,600 crore additional capex, projecting debt-to-EBITDA near 3.3x while maintaining margin guidance above 49%.', driftMin: -2.6, driftMax: -1.0, driftMid: -1.8 },
+            { session: 2, company: 'LT', news: 'Net profit rose 20% to ₹3,460 crore including ₹610 crore exceptional gains, while working capital cycle extended to 118 days.', driftMin: -1.2, driftMax: 0.8, driftMid: -0.2 },
+            { session: 2, company: 'TITAN', news: 'Premium segment revenue rose 23% YoY, lifting EBITDA to ₹1,470 crore, though operating cash flow declined 15% sequentially.', driftMin: 0.4, driftMax: 1.6, driftMid: 1.0 },
+            { session: 2, company: 'JSWSTEEL', news: 'JSW Steel approved ₹8,000 crore expansion capex as interest expense increased 15% YoY to ₹1,270 crore.', driftMin: -2.2, driftMax: -0.8, driftMid: -1.5 },
+            { session: 2, company: 'ONGC', news: 'ONGC declared ₹7/share interim dividend despite flat internal accruals and unchanged production guidance.', driftMin: -1.8, driftMax: -0.6, driftMid: -1.2 },
+            { session: 2, company: 'TCS', news: 'TCS trimmed margin outlook by 40 bps to 23.8% while maintaining revenue growth guidance near 8%.', driftMin: -2.4, driftMax: -0.9, driftMid: -1.6 },
+            { session: 2, company: 'CEATLTD', news: 'CEAT refinanced ₹1,200 crore debt at 8.2% average cost, while domestic volumes declined 2% sequentially.', driftMin: -1.0, driftMax: 0.6, driftMid: -0.2 },
+            { session: 2, company: 'SBIN', news: 'Cost-to-income ratio rose to 52.3%, while SME slippages stood at ₹4,100 crore during the quarter.', driftMin: -2.0, driftMax: -0.7, driftMid: -1.3 },
+            { session: 3, company: 'ADANIPORTS', news: 'EBITDA margin held at 50.3%, though interest expense rose 21% YoY to ₹1,920 crore, moderating ROCE to 16.2%.', driftMin: -1.8, driftMax: -0.6, driftMid: -1.2 },
+            { session: 3, company: 'LT', news: 'Execution revenue grew 12% YoY, but receivables rose to ₹68,400 crore, keeping free cash flow under pressure.', driftMin: -3.0, driftMax: -1.2, driftMid: -2.1 },
+            { session: 3, company: 'TITAN', news: 'EBITDA margin remained near 13%, while inventory turnover declined to 2.3x and operating cash flow fell 17% sequentially.', driftMin: -2.8, driftMax: -1.0, driftMid: -1.9 },
+            { session: 3, company: 'JSWSTEEL', news: 'Net debt reduced to ₹60,850 crore, even as export realizations softened 3% sequentially.', driftMin: 0.4, driftMax: 1.6, driftMid: 1.0 },
+            { session: 3, company: 'ONGC', news: 'Reserve replacement ratio stood at 0.94 while dividend payout remained above 45% of profit.', driftMin: -2.2, driftMax: -0.8, driftMid: -1.5 },
+            { session: 3, company: 'TCS', news: 'Deal wins stood at $9.7 billion for the quarter, though revenue per employee declined 2.6% sequentially.', driftMin: -2.6, driftMax: -1.0, driftMid: -1.8 },
+            { session: 3, company: 'CEATLTD', news: 'EBITDA margin improved to 11.8%, while working capital days increased to 64 from 58.', driftMin: -0.8, driftMax: 0.8, driftMid: 0.0 },
+            { session: 3, company: 'SBIN', news: 'Loan growth reached 19% YoY, with provision coverage improving to 77% despite treasury MTM losses of ₹1,700 crore.', driftMin: 0.3, driftMax: 1.3, driftMid: 0.8 }
         ];
 
         let currentSession = 1;
-        let newsInterval;
-        let currentNewsIndex = 0;
-        let isFlashNewsRunning = false;
-        let newsHistory = [];
-        let marketClockInterval = null;
         let sessionStartTime = null;
-        const SESSION_DURATION_MS = 15 * 60 * 1000; // 15 minutes in milliseconds
+        let marketClockInterval = null;
+        let allPriceAnimations = [];
+        let tradeLog = [];
+        let newsHistory = [];
+        let isFlashNewsRunning = false;
+        let currentNewsIndex = 0;
+        const SESSION_DURATION_MS = 15 * 60 * 1000;
         const MARKET_START_TIME = { hours: 9, minutes: 15 };
-        const MARKET_END_TIME = { hours: 15, minutes: 30 };
-        let timeSpeed = 1; // Speed multiplier (1 = real-time, 100 = 100x faster)
 
-        // Order book structure: { symbol: [{ qty, price, amt, newPrice }] }
-        let orderBook = {};
+        // ==================== ADMIN FUNCTIONS ====================
 
-        // Update time speed
-        function updateTimeSpeed(value) {
-            timeSpeed = parseInt(value);
-            const speedDisplay = document.getElementById('speedDisplay');
+        function toggleAdminBar() {
+            const bar = document.getElementById('adminBar');
+            bar.classList.toggle('hidden');
+            document.body.classList.toggle('admin-visible');
+        }
+
+        function togglePresentationMode() {
+            document.body.classList.toggle('presentation-mode', document.getElementById('presentationMode').checked);
+        }
+
+        function openAdminConsole(tab) {
+            document.getElementById('adminModal').classList.add('show');
+            switchTab(tab);
+        }
+
+        function closeAdminConsole() {
+            document.getElementById('adminModal').classList.remove('show');
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             
-            if (timeSpeed === 1) {
-                speedDisplay.textContent = '1x (Real-time)';
-            } else if (timeSpeed <= 5) {
-                speedDisplay.textContent = timeSpeed + 'x';
-            } else if (timeSpeed <= 20) {
-                speedDisplay.textContent = timeSpeed + 'x (Fast)';
-            } else if (timeSpeed <= 50) {
-                speedDisplay.textContent = timeSpeed + 'x (Very Fast)';
-            } else {
-                speedDisplay.textContent = timeSpeed + 'x (TURBO)';
-            }
+            const tabIndex = ['teams','drift','news','index','engine'].indexOf(tabName) + 1;
+            const tab = document.querySelector(`.tab:nth-child(${tabIndex})`);
+            if (tab) tab.classList.add('active');
+            
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            
+            if (tabName === 'teams') renderTeamConfig();
+            if (tabName === 'drift') renderDriftConfig();
+            if (tabName === 'news') renderNewsConfig();
         }
 
-        // Initialize order book for each stock
-        function initializeOrderBook() {
-            stocks.forEach(stock => {
-                if (!orderBook[stock.symbol]) {
-                    orderBook[stock.symbol] = [];
-                }
-            });
-            renderOrderBook();
-        }
+        // TEAM CONFIG
+        function renderTeamConfig() {
+            const container = document.getElementById('teamConfigContainer');
+            container.innerHTML = '';
 
-        // Render the order book UI
-        function renderOrderBook() {
-            const grid = document.getElementById('orderBookGrid');
-            grid.innerHTML = '';
-
-            stocks.forEach(stock => {
-                const bookDiv = document.createElement('div');
-                bookDiv.className = 'company-order-book';
-                bookDiv.innerHTML = `
-                    <h4>${stock.symbol}</h4>
-                    <div id="transactions-${stock.symbol}">
-                        ${renderTransactions(stock.symbol)}
+            Object.entries(teams).forEach(([name, data], idx) => {
+                const div = document.createElement('div');
+                div.className = 'config-section';
+                div.innerHTML = `
+                    <div style="display: grid; grid-template-columns: 200px 150px 1fr auto; gap: 10px; margin-bottom: 15px; align-items: center;">
+                        <input type="text" value="${name}" id="team-name-${idx}" placeholder="Team Name" style="padding: 8px; border: 2px solid #000;">
+                        <input type="number" value="${data.cash}" id="team-cash-${idx}" placeholder="Cash" style="padding: 8px; border: 2px solid #000;">
+                        <div style="font-weight: bold;">Holdings:</div>
+                        <button class="btn-remove" onclick="removeTeam('${name}')">Remove</button>
                     </div>
-                    <button class="btn btn-primary" style="width: 100%; margin-top: 10px; padding: 6px; font-size: 0.85em;" onclick="addTransaction('${stock.symbol}')">+ Add Transaction</button>
-                    <div class="current-price-display">
-                        Current: ₹<span id="ob-price-${stock.symbol}">${stock.price.toFixed(2)}</span>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                            <label style="font-size: 0.85em; font-weight: bold;">NIFTY50</label>
+                            <input type="number" value="${data.holdings['NIFTY50'] || 0}" id="team-${idx}-NIFTY50" style="padding: 6px; border: 1px solid #000;">
+                        </div>
+                        ${stocks.map(s => `
+                            <div style="display: flex; flex-direction: column; gap: 4px;">
+                                <label style="font-size: 0.85em; font-weight: bold;">${s.symbol}</label>
+                                <input type="number" value="${data.holdings[s.symbol] || 0}" id="team-${idx}-${s.symbol}" style="padding: 6px; border: 1px solid #000;">
+                            </div>
+                        `).join('')}
                     </div>
                 `;
-                grid.appendChild(bookDiv);
+                container.appendChild(div);
             });
         }
 
-        // Render transactions for a specific stock
-        function renderTransactions(symbol) {
-            const transactions = orderBook[symbol] || [];
-            if (transactions.length === 0) {
-                return '<div style="text-align: center; color: #666; padding: 10px; font-size: 0.85em;">No transactions yet</div>';
-            }
-
-            return transactions.map((t, idx) => `
-                <div class="transaction-row">
-                    <label>T${idx + 1}</label>
-                    <input type="number" class="transaction-input" placeholder="QTY" value="${t.qty || ''}" 
-                           onchange="updateTransaction('${symbol}', ${idx}, 'qty', this.value)">
-                    <input type="number" class="transaction-input" placeholder="PRICE" value="${t.price || ''}" 
-                           onchange="updateTransaction('${symbol}', ${idx}, 'price', this.value)">
-                    <input type="number" class="transaction-input" readonly value="${t.amt || ''}" placeholder="AMT">
-                    <input type="number" class="transaction-input" readonly value="${t.newPrice || ''}" placeholder="NEW PRICE">
-                </div>
-            `).join('');
+        function addTeam() {
+            const num = Object.keys(teams).length + 1;
+            const name = `Team ${String.fromCharCode(64 + num)}`;
+            teams[name] = { cash: 500000, holdings: {} };
+            teams[name].holdings['NIFTY50'] = Math.floor(62500 / indexFund.open);
+            stocks.forEach(s => teams[name].holdings[s.symbol] = Math.floor(50000 / s.open));
+            renderTeamConfig();
         }
 
-        // Add a new transaction
-        function addTransaction(symbol) {
-            if (!orderBook[symbol]) {
-                orderBook[symbol] = [];
+        function removeTeam(name) {
+            if (Object.keys(teams).length <= 2) return alert('Need at least 2 teams!');
+            if (confirm(`Remove ${name}?`)) {
+                delete teams[name];
+                renderTeamConfig();
             }
-            orderBook[symbol].push({ qty: '', price: '', amt: '', newPrice: '' });
-            refreshOrderBook(symbol);
         }
 
-        // Update transaction values
-        function updateTransaction(symbol, index, field, value) {
-            const transaction = orderBook[symbol][index];
-            transaction[field] = parseFloat(value) || '';
-
-            // Calculate AMT
-            if (transaction.qty && transaction.price) {
-                transaction.amt = transaction.qty * transaction.price;
-            }
-
-            // Recalculate weighted average (NEW PRICE) for all transactions
-            calculateWeightedAverage(symbol);
-            refreshOrderBook(symbol);
+        function saveTeamConfig() {
+            const newTeams = {};
+            Object.keys(teams).forEach((old, idx) => {
+                const name = document.getElementById(`team-name-${idx}`).value || `Team ${idx+1}`;
+                const cash = parseInt(document.getElementById(`team-cash-${idx}`).value) || 500000;
+                const holdings = {};
+                
+                // Save NIFTY50 holdings
+                holdings['NIFTY50'] = parseInt(document.getElementById(`team-${idx}-NIFTY50`).value) || 0;
+                
+                // Save stock holdings
+                stocks.forEach(s => {
+                    holdings[s.symbol] = parseInt(document.getElementById(`team-${idx}-${s.symbol}`).value) || 0;
+                });
+                newTeams[name] = { cash, holdings };
+            });
+            teams = newTeams;
+            updateTeamDropdown();
+            updateLeaderboard();
+            alert('Teams saved!');
         }
 
-        // Calculate weighted average price for a stock
-        function calculateWeightedAverage(symbol) {
-            const transactions = orderBook[symbol];
-            let totalQty = 0;
-            let totalAmt = 0;
+        // DRIFT CONFIG
+        function renderDriftConfig() {
+            [1, 2, 3].forEach(session => {
+                const container = document.getElementById(`drift-session-${session}`);
+                container.innerHTML = '';
+                
+                stocks.forEach(stock => {
+                    const news = flashNewsData.find(n => n.session === session && n.company === stock.symbol);
+                    if (news) {
+                        const div = document.createElement('div');
+                        div.className = 'drift-grid';
+                        div.innerHTML = `
+                            <div style="font-weight: bold;">${stock.symbol}</div>
+                            <input type="number" step="0.1" value="${news.driftMin}" id="drift-${session}-${stock.symbol}-min">
+                            <input type="number" step="0.1" value="${news.driftMax}" id="drift-${session}-${stock.symbol}-max">
+                            <input type="number" step="0.1" value="${news.driftMid}" id="drift-${session}-${stock.symbol}-mid">
+                        `;
+                        container.appendChild(div);
+                    }
+                });
+            });
+        }
 
-            transactions.forEach(t => {
-                if (t.qty && t.price) {
-                    totalQty += parseFloat(t.qty);
-                    totalAmt += parseFloat(t.amt);
+        function saveDriftConfig() {
+            flashNewsData.forEach(news => {
+                const min = parseFloat(document.getElementById(`drift-${news.session}-${news.company}-min`)?.value);
+                const max = parseFloat(document.getElementById(`drift-${news.session}-${news.company}-max`)?.value);
+                const mid = parseFloat(document.getElementById(`drift-${news.session}-${news.company}-mid`)?.value);
+                if (!isNaN(min)) news.driftMin = min;
+                if (!isNaN(max)) news.driftMax = max;
+                if (!isNaN(mid)) news.driftMid = mid;
+            });
+            alert('Drift config saved!');
+        }
+
+        // NEWS CONFIG
+        function renderNewsConfig() {
+            [1, 2, 3].forEach(session => {
+                const container = document.getElementById(`news-session-${session}`);
+                container.innerHTML = '';
+                
+                stocks.forEach(stock => {
+                    const news = flashNewsData.find(n => n.session === session && n.company === stock.symbol);
+                    if (news) {
+                        const div = document.createElement('div');
+                        div.className = 'config-item';
+                        div.innerHTML = `
+                            <label>${stock.name} (${stock.symbol})</label>
+                            <textarea id="news-${session}-${stock.symbol}">${news.news}</textarea>
+                        `;
+                        container.appendChild(div);
+                    }
+                });
+            });
+        }
+
+        function saveNewsConfig() {
+            flashNewsData.forEach(news => {
+                const text = document.getElementById(`news-${news.session}-${news.company}`)?.value;
+                if (text) news.news = text;
+            });
+            alert('News config saved!');
+        }
+
+        // INDEX FUND CONFIG
+        function saveIndexConfig() {
+            indexFund.name = document.getElementById('indexName').value;
+            indexFund.value = parseFloat(document.getElementById('indexStart').value);
+            indexFund.open = indexFund.value;
+            indexFund.drift[1] = parseFloat(document.getElementById('indexDrift1').value);
+            indexFund.drift[2] = parseFloat(document.getElementById('indexDrift2').value);
+            indexFund.drift[3] = parseFloat(document.getElementById('indexDrift3').value);
+            indexFund.history = [indexFund.value];
+            updateIndexCard();
+            alert('Index fund saved!');
+        }
+
+        // ==================== GAME LOGIC ====================
+
+        function initializeTeamHoldings() {
+            Object.keys(teams).forEach(name => {
+                // Initialize stock holdings
+                stocks.forEach(stock => {
+                    if (!teams[name].holdings[stock.symbol]) {
+                        teams[name].holdings[stock.symbol] = Math.floor(50000 / stock.open);
+                    }
+                });
+                
+                // Initialize NIFTY50 holdings
+                if (!teams[name].holdings['NIFTY50']) {
+                    teams[name].holdings['NIFTY50'] = Math.floor(62500 / indexFund.open);
                 }
             });
+            updateTeamDropdown();
+            updateLeaderboard();
+        }
 
-            const weightedAvg = totalQty > 0 ? totalAmt / totalQty : null;
-
-            // Update all transaction newPrice fields
-            transactions.forEach(t => {
-                t.newPrice = weightedAvg ? weightedAvg.toFixed(2) : '';
+        function updateTeamDropdown() {
+            const select = document.getElementById('tradeTeam');
+            select.innerHTML = '';
+            Object.keys(teams).forEach(name => {
+                const opt = document.createElement('option');
+                opt.value = name;
+                opt.textContent = name;
+                select.appendChild(opt);
             });
 
-            // Update the actual stock price if we have a valid weighted average
-            if (weightedAvg) {
+            const stockSelect = document.getElementById('tradeStock');
+            stockSelect.innerHTML = '';
+            
+            // Add NIFTY 50 first
+            const indexOpt = document.createElement('option');
+            indexOpt.value = 'NIFTY50';
+            indexOpt.textContent = `${indexFund.name} (${indexFund.symbol})`;
+            stockSelect.appendChild(indexOpt);
+            
+            // Add stocks
+            stocks.forEach(stock => {
+                const opt = document.createElement('option');
+                opt.value = stock.symbol;
+                opt.textContent = `${stock.name} (${stock.symbol})`;
+                stockSelect.appendChild(opt);
+            });
+        }
+
+        // Market Engine Functions
+        function toggleMarketEngine() {
+            const mode = document.getElementById('engineEnabled').value;
+            if (mode === 'external') {
+                if (typeof window.MarketEngine !== 'undefined') {
+                    marketEngine.enabled = 'external';
+                    alert('External Market Engine ENABLED - Using market_engine.js');
+                } else {
+                    alert('⚠️ External engine not found!\n\nTo use external engine:\n1. Add market_engine.js to your folder\n2. Add <script src="market_engine.js"></script> before </body>');
+                    document.getElementById('engineEnabled').value = 'false';
+                    marketEngine.enabled = false;
+                }
+            } else {
+                marketEngine.enabled = mode === 'true';
+                alert(`Built-in Market Engine ${marketEngine.enabled ? 'ENABLED' : 'DISABLED'}`);
+            }
+        }
+
+        function saveEngineConfig() {
+            marketEngine.params.depthFactor = parseFloat(document.getElementById('engineDepth').value);
+            marketEngine.params.impactClamp = parseFloat(document.getElementById('engineClamp').value) / 100;
+            
+            Object.keys(marketEngine.config).forEach(symbol => {
+                const k = parseFloat(document.getElementById(`engineK-${symbol}`)?.value);
+                if (!isNaN(k)) marketEngine.config[symbol].K = k;
+            });
+            
+            alert('Market Engine config saved!');
+        }
+
+        function calculateMarketImpact(symbol, side, qty, price) {
+            // Check if external engine is enabled and available
+            if (marketEngine.enabled === 'external' && typeof window.MarketEngine !== 'undefined') {
+                try {
+                    return window.MarketEngine.calculateImpact(symbol, side, qty, price);
+                } catch (e) {
+                    console.error('External engine error:', e);
+                    return 0;
+                }
+            }
+            
+            // Use built-in engine
+            if (!marketEngine.enabled || marketEngine.enabled === false) return 0;
+            
+            const config = marketEngine.config[symbol];
+            if (!config) return 0;
+            
+            const instrument = symbol === 'NIFTY50' ? indexFund : stocks.find(s => s.symbol === symbol);
+            if (!instrument) return 0;
+            
+            const direction = side === 'BUY' ? 1 : -1;
+            const tradeValue = qty * price;
+            const currentPrice = instrument.value || instrument.price;
+            const liquidityValue = (config.dailyVolume * currentPrice) * marketEngine.params.depthFactor;
+            
+            const impact = direction * config.K * Math.sqrt(tradeValue / liquidityValue);
+            const clampedImpact = Math.max(-marketEngine.params.impactClamp, 
+                                           Math.min(marketEngine.params.impactClamp, impact));
+            
+            return clampedImpact;
+        }
+
+        function calculateNetWorth(name) {
+            const team = teams[name];
+            let total = team.cash;
+            Object.entries(team.holdings).forEach(([sym, qty]) => {
+                if (sym === 'NIFTY50') {
+                    total += qty * indexFund.value;
+                } else {
+                    const stock = stocks.find(s => s.symbol === sym);
+                    if (stock) total += qty * stock.price;
+                }
+            });
+            return total;
+        }
+
+        function updateLeaderboard() {
+            const rankings = Object.keys(teams).map(name => ({
+                name,
+                netWorth: calculateNetWorth(name),
+                cash: teams[name].cash
+            })).sort((a, b) => b.netWorth - a.netWorth);
+
+            const container = document.getElementById('leaderboardContent');
+            container.innerHTML = '';
+
+            rankings.forEach((team, idx) => {
+                const card = document.createElement('div');
+                card.className = `team-card ${idx === 0 ? 'rank-1' : ''}`;
+                const holdings = team.netWorth - team.cash;
+                card.innerHTML = `
+                    <div class="team-rank">#${idx + 1}</div>
+                    <div class="team-name">${team.name}</div>
+                    <div class="team-stats">
+                        Cash: ₹${team.cash.toLocaleString()}<br>
+                        Holdings: ₹${holdings.toLocaleString()}
+                    </div>
+                    <div class="team-networth">₹${team.netWorth.toLocaleString()}</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function updateIndexCard() {
+            const change = indexFund.value - indexFund.open;
+            const pct = ((change / indexFund.open) * 100).toFixed(2);
+            const isPos = change >= 0;
+            
+            document.getElementById('indexFundCard').innerHTML = `
+                <div class="index-card">
+                    <div style="font-weight: bold; font-size: 1.1em; margin-bottom: 8px;">${indexFund.name}</div>
+                    <div style="font-size: 1.5em; font-weight: bold; font-family: 'Courier New';">${indexFund.value.toFixed(2)}</div>
+                    <div style="font-size: 0.9em; font-weight: bold; color: ${isPos ? '#000' : '#666'};">
+                        ${isPos ? '▲' : '▼'} ${Math.abs(change).toFixed(2)} (${isPos ? '+' : ''}${pct}%)
+                    </div>
+                </div>
+            `;
+        }
+
+        function executeTrade() {
+            const team = document.getElementById('tradeTeam').value;
+            const symbol = document.getElementById('tradeStock').value;
+            const side = document.getElementById('tradeSide').value;
+            const qty = parseInt(document.getElementById('tradeQty').value);
+            const price = parseFloat(document.getElementById('tradePrice').value);
+
+            if (!qty || qty <= 0 || !price || price <= 0) return alert('Invalid input!');
+
+            const teamData = teams[team];
+            const value = qty * price;
+
+            // Validate trade
+            if (side === 'BUY') {
+                if (teamData.cash < value) return alert('Insufficient cash!');
+                teamData.cash -= value;
+                teamData.holdings[symbol] = (teamData.holdings[symbol] || 0) + qty;
+            } else {
+                if ((teamData.holdings[symbol] || 0) < qty) return alert('Insufficient shares!');
+                teamData.cash += value;
+                teamData.holdings[symbol] -= qty;
+            }
+
+            // Record trade
+            tradeLog.unshift({ team, symbol, side, qty, price, value, timestamp: new Date() });
+
+            // Update price with market engine if enabled
+            if (symbol === 'NIFTY50') {
+                const impact = calculateMarketImpact(symbol, side, qty, price);
+                if (marketEngine.enabled) {
+                    indexFund.value *= (1 + impact);
+                } else {
+                    indexFund.value = price;
+                }
+                updateIndexCard();
+                updateIndexStockCard();
+            } else {
                 const stock = stocks.find(s => s.symbol === symbol);
                 if (stock) {
-                    stock.price = weightedAvg;
+                    const impact = calculateMarketImpact(symbol, side, qty, price);
+                    if (marketEngine.enabled) {
+                        stock.price *= (1 + impact);
+                    } else {
+                        stock.price = price;
+                    }
                     updateStockCard(symbol);
-                    
-                    // Update the order book display price
-                    const priceEl = document.getElementById(`ob-price-${symbol}`);
-                    if (priceEl) {
-                        priceEl.textContent = weightedAvg.toFixed(2);
-                    }
                 }
             }
+
+            renderTradeLog();
+            updateLeaderboard();
+
+            document.getElementById('tradeQty').value = '';
+            document.getElementById('tradePrice').value = '';
         }
 
-        // Refresh order book display for a specific stock
-        function refreshOrderBook(symbol) {
-            const container = document.getElementById(`transactions-${symbol}`);
-            if (container) {
-                container.innerHTML = renderTransactions(symbol);
-            }
-        }
+        function renderTradeLog() {
+            const container = document.getElementById('tradesLogContent');
+            if (!container) return;
+            container.innerHTML = '';
 
-        // Clear all transactions
-        function clearAllTransactions() {
-            if (!confirm('Clear all transactions? This cannot be undone.')) return;
-            
-            orderBook = {};
-            stocks.forEach(stock => {
-                orderBook[stock.symbol] = [];
-                stock.price = stock.open;
-                updateStockCard(stock.symbol);
+            tradeLog.slice(0, 30).forEach(trade => {
+                const row = document.createElement('div');
+                row.className = `trade-row ${trade.side.toLowerCase()}`;
+                row.innerHTML = `
+                    <div>${trade.team}</div>
+                    <div>${trade.symbol}</div>
+                    <div>${trade.side}</div>
+                    <div>${trade.qty}</div>
+                    <div>₹${trade.price.toFixed(2)}</div>
+                    <div>${trade.timestamp.toLocaleTimeString()}</div>
+                `;
+                container.appendChild(row);
             });
-            renderOrderBook();
         }
 
-        // Export to Excel
-        function exportToExcel() {
-            let csvContent = "data:text/csv;charset=utf-8,";
-            
-            // Add header
-            csvContent += "Session " + currentSession + " - Order Book Export\n\n";
-            
-            stocks.forEach(stock => {
-                csvContent += stock.name + " (" + stock.symbol + ")\n";
-                csvContent += "Transaction,QTY,PRICE,AMT,NEW PRICE\n";
-                
-                const transactions = orderBook[stock.symbol] || [];
-                transactions.forEach((t, idx) => {
-                    csvContent += `T${idx + 1},${t.qty || ''},${t.price || ''},${t.amt || ''},${t.newPrice || ''}\n`;
-                });
-                
-                csvContent += `\nCurrent Price: ₹${stock.price.toFixed(2)}\n\n`;
+        function exportTrades() {
+            let csv = "data:text/csv;charset=utf-8,Team,Symbol,Side,Qty,Price,Value,Time\n";
+            tradeLog.forEach(t => {
+                csv += `${t.team},${t.symbol},${t.side},${t.qty},${t.price},${t.value},${t.timestamp.toISOString()}\n`;
             });
-            
-            const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `session_${currentSession}_orderbook.csv`);
-            document.body.appendChild(link);
+            link.href = encodeURI(csv);
+            link.download = `trades_session_${currentSession}.csv`;
             link.click();
-            document.body.removeChild(link);
         }
 
-        // Toggle order book visibility
-        function toggleOrderBook() {
-            const section = document.getElementById('orderBookSection');
-            const toggleText = document.getElementById('toggleText');
-            
-            if (section.classList.contains('collapsed')) {
-                section.classList.remove('collapsed');
-                toggleText.textContent = '▼ Hide';
-            } else {
-                section.classList.add('collapsed');
-                toggleText.textContent = '▶ Show';
+        function clearTrades() {
+            if (confirm('Clear all trades?')) {
+                tradeLog = [];
+                renderTradeLog();
             }
         }
 
-        // Convert real time (9:15 to 15:30) to elapsed milliseconds in 15-minute window
-        function getMarketTime(elapsedMs) {
-            // Apply time speed multiplier
-            const acceleratedElapsed = elapsedMs * timeSpeed;
-            
-            // Total market duration: 9:15 to 15:30 = 6h 15min = 375 minutes
-            const totalMarketMinutes = 375;
-            const progressRatio = acceleratedElapsed / SESSION_DURATION_MS;
-            const currentMarketMinutes = Math.floor(progressRatio * totalMarketMinutes);
-            
-            let hours = MARKET_START_TIME.hours;
-            let minutes = MARKET_START_TIME.minutes + currentMarketMinutes;
-            
-            // Handle hour rollovers
-            while (minutes >= 60) {
-                minutes -= 60;
-                hours += 1;
-            }
-            
-            return { hours, minutes };
+        function toggleTrades() {
+            const section = document.getElementById('tradeSection');
+            section.classList.toggle('collapsed');
+            document.getElementById('toggleTradeText').textContent = section.classList.contains('collapsed') ? '▶' : '▼';
         }
 
-        function formatTime(hours, minutes) {
-            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-        }
-
-        function updateMarketClock() {
-            if (!sessionStartTime) return;
-            
-            const elapsed = Date.now() - sessionStartTime;
-            const acceleratedElapsed = elapsed * timeSpeed;
-            const time = getMarketTime(elapsed);
-            const timeString = formatTime(time.hours, time.minutes);
-            
-            document.getElementById('marketClock').textContent = timeString;
-            
-            // Update market status
-            const statusEl = document.getElementById('marketStatus');
-            const progressPercent = (acceleratedElapsed / SESSION_DURATION_MS) * 100;
-            
-            if (progressPercent < 90) {
-                statusEl.textContent = 'MARKET OPEN';
-                statusEl.className = 'market-status open';
-            } else if (progressPercent < 100) {
-                statusEl.textContent = 'CLOSING SOON';
-                statusEl.className = 'market-status closing';
-            } else {
-                statusEl.textContent = 'MARKET CLOSED';
-                statusEl.className = 'market-status closed';
-                stopMarketClock();
-                
-                // Enable next session button
-                document.getElementById('nextBtn').disabled = false;
-                document.getElementById('startBtn').disabled = true;
-            }
-        }
-
-        function startMarketClock() {
-            sessionStartTime = Date.now();
-            updateMarketClock();
-            
-            // Update every 100ms for smooth animation
-            marketClockInterval = setInterval(updateMarketClock, 100);
-            
-            // Auto-stop based on time speed
-            const adjustedDuration = SESSION_DURATION_MS / timeSpeed;
-            setTimeout(() => {
-                stopMarketClock();
-            }, adjustedDuration);
-        }
-
-        function stopMarketClock() {
-            if (marketClockInterval) {
-                clearInterval(marketClockInterval);
-                marketClockInterval = null;
-            }
-        }
-
-        function resetMarketClock() {
-            stopMarketClock();
-            sessionStartTime = null;
-            document.getElementById('marketClock').textContent = '09:15';
-            document.getElementById('marketStatus').textContent = 'MARKET OPEN';
-            document.getElementById('marketStatus').className = 'market-status open';
-        }
-
-        // Function to add news to history
-        function addToHistory(newsItem, impact) {
-            const historyContainer = document.getElementById('historyContainer');
-            
-            // Remove "no history" message if it exists
-            const noHistory = historyContainer.querySelector('.no-history');
-            if (noHistory) {
-                noHistory.remove();
-            }
-
-            const historyItem = document.createElement('div');
-            historyItem.className = 'history-item new';
-            
-            const now = new Date();
-            const timeString = now.toLocaleTimeString();
-            
-            historyItem.innerHTML = `
-                <div class="history-company">${newsItem.company}</div>
-                <div class="history-text">${newsItem.news}</div>
-                <div class="history-time">${timeString}</div>
-            `;
-            
-            historyContainer.insertBefore(historyItem, historyContainer.firstChild);
-            newsHistory.push({...newsItem, time: timeString, impact: impact});
-        }
-
-        // Function to clear history when changing sessions
-        function clearHistory() {
-            const historyContainer = document.getElementById('historyContainer');
-            historyContainer.innerHTML = '<div class="no-history">No news yet. Click "Start Flash News" to begin.</div>';
-            newsHistory = [];
-        }
-
-        // Function to load prices from JSON (generated from Excel)
-        async function loadPricesFromExcel() {
-            try {
-                const response = await fetch('stock_prices.json');
-                if (!response.ok) {
-                    throw new Error('Could not load stock_prices.json');
-                }
-                
-                const priceData = await response.json();
-                
-                // Update stock prices from the loaded data
-                let updatedCount = 0;
-                stocks.forEach(stock => {
-                    if (priceData[stock.symbol]) {
-                        const newPrice = priceData[stock.symbol].price;
-                        if (newPrice && newPrice > 0) {
-                            stock.price = newPrice;
-                            stock.open = newPrice * 0.995; // Set open slightly lower
-                            stock.high = newPrice * 1.01;
-                            stock.low = newPrice * 0.99;
-                            updateStockCard(stock.symbol);
-                            updatedCount++;
-                        }
-                    }
-                });
-                
-                if (updatedCount > 0) {
-                    alert(`✓ Successfully updated ${updatedCount} stock prices from Excel!`);
-                } else {
-                    alert('ℹ️ No prices found in Excel file. Please fill in QTY and PRICE columns in the Excel sheet, then run the Python script to generate stock_prices.json');
-                }
-                
-            } catch (error) {
-                console.error('Error loading prices:', error);
-                alert(`To connect Excel prices:
-                
-1. Fill in QTY and PRICE columns in your Excel file
-2. Run: python3 extract_prices.py
-3. This generates stock_prices.json
-4. Place the JSON file in the same folder as this HTML
-5. Click "Reload Prices from Excel" again
-
-Currently using default sample prices.`);
-            }
-        }
-
-        // Initialize stock cards
+        // STOCK CARDS
         function renderStocks() {
             const grid = document.getElementById('stockGrid');
             grid.innerHTML = '';
             
-            stocks.forEach((stock, index) => {
+            // Add NIFTY 50 card first
+            renderIndexStockCard(grid);
+            
+            stocks.forEach(stock => {
                 const change = stock.price - stock.open;
-                const changePercent = ((change / stock.open) * 100).toFixed(2);
-                const isPositive = change >= 0;
+                const pct = ((change / stock.open) * 100).toFixed(2);
+                const isPos = change >= 0;
                 
                 const card = document.createElement('div');
                 card.className = 'stock-card';
                 card.id = `stock-${stock.symbol}`;
                 card.innerHTML = `
-                    <div class="stock-header">
-                        <div class="company-name">${stock.name}</div>
-                        <div class="stock-symbol">${stock.symbol}</div>
+                    <div class="company-name">${stock.name}</div>
+                    <div class="stock-symbol">${stock.symbol}</div>
+                    <div class="current-price">₹${stock.price.toFixed(2)}</div>
+                    <div class="price-change ${isPos ? 'positive' : 'negative'}">
+                        ${isPos ? '▲' : '▼'} ₹${Math.abs(change).toFixed(2)} (${isPos ? '+' : ''}${pct}%)
                     </div>
-                    <div class="price-section">
-                        <div class="current-price">₹${stock.price.toFixed(2)}</div>
-                        <div class="price-change ${isPositive ? 'positive' : 'negative'}">
-                            <span class="arrow">${isPositive ? '▲' : '▼'}</span>
-                            <span>₹${Math.abs(change).toFixed(2)} (${isPositive ? '+' : ''}${changePercent}%)</span>
-                        </div>
+                    <div class="mini-chart-container">
+                        <canvas class="mini-chart" id="chart-${stock.symbol}"></canvas>
                     </div>
                     <div class="stats">
-                        <div class="stat">
-                            <div class="stat-label">High</div>
-                            <div class="stat-value">₹${stock.high.toFixed(2)}</div>
-                        </div>
-                        <div class="stat">
-                            <div class="stat-label">Low</div>
-                            <div class="stat-value">₹${stock.low.toFixed(2)}</div>
-                        </div>
-                        <div class="stat">
-                            <div class="stat-label">Open</div>
-                            <div class="stat-value">₹${stock.open.toFixed(2)}</div>
-                        </div>
-                        <div class="stat">
-                            <div class="stat-label">Volume</div>
-                            <div class="stat-value">${stock.volume}</div>
-                        </div>
+                        <div><span class="stat-label">Open:</span> <span class="stat-value">₹${stock.open.toFixed(2)}</span></div>
+                        <div><span class="stat-label">Volume:</span> <span class="stat-value">${stock.volume}</span></div>
                     </div>
                 `;
                 grid.appendChild(card);
+                drawMiniChart(stock.symbol);
             });
+        }
+
+        function renderIndexStockCard(grid) {
+            const change = indexFund.value - indexFund.open;
+            const pct = ((change / indexFund.open) * 100).toFixed(2);
+            const isPos = change >= 0;
+            
+            const card = document.createElement('div');
+            card.className = 'stock-card index-card';
+            card.id = 'stock-NIFTY50';
+            card.innerHTML = `
+                <div class="company-name">${indexFund.name}</div>
+                <div class="stock-symbol">${indexFund.symbol}</div>
+                <div class="current-price">${indexFund.value.toFixed(2)}</div>
+                <div class="price-change ${isPos ? 'positive' : 'negative'}">
+                    ${isPos ? '▲' : '▼'} ${Math.abs(change).toFixed(2)} (${isPos ? '+' : ''}${pct}%)
+                </div>
+                <div class="mini-chart-container">
+                    <canvas class="mini-chart" id="chart-NIFTY50"></canvas>
+                </div>
+                <div class="stats">
+                    <div><span class="stat-label">Open:</span> <span class="stat-value">${indexFund.open.toFixed(2)}</span></div>
+                    <div><span class="stat-label">Volume:</span> <span class="stat-value">${indexFund.volume}</span></div>
+                </div>
+            `;
+            grid.appendChild(card);
+            drawIndexChart();
+        }
+
+        function updateIndexStockCard() {
+            const card = document.getElementById('stock-NIFTY50');
+            if (!card) return;
+
+            const change = indexFund.value - indexFund.open;
+            const pct = ((change / indexFund.open) * 100).toFixed(2);
+            const isPos = change >= 0;
+
+            card.querySelector('.current-price').textContent = indexFund.value.toFixed(2);
+            card.querySelector('.price-change').className = `price-change ${isPos ? 'positive' : 'negative'}`;
+            card.querySelector('.price-change').textContent = `${isPos ? '▲' : '▼'} ${Math.abs(change).toFixed(2)} (${isPos ? '+' : ''}${pct}%)`;
+
+            indexFund.history.push(indexFund.value);
+            if (indexFund.history.length > 100) indexFund.history.shift();
+
+            drawIndexChart();
+            card.classList.add('flash');
+            setTimeout(() => card.classList.remove('flash'), 500);
+        }
+
+        function drawIndexChart() {
+            const canvas = document.getElementById('chart-NIFTY50');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width = canvas.offsetWidth;
+            const height = canvas.height = canvas.offsetHeight;
+            
+            ctx.clearRect(0, 0, width, height);
+            
+            const history = indexFund.history;
+            if (history.length < 2) return;
+            
+            const min = Math.min(...history);
+            const max = Math.max(...history);
+            const range = max - min || 1;
+            const padding = range * 0.1;
+            const chartMin = min - padding;
+            const chartMax = max + padding;
+            const chartRange = chartMax - chartMin;
+            
+            const points = history.map((val, i) => ({
+                x: (i / (history.length - 1)) * (width - 50),
+                y: height - ((val - chartMin) / chartRange) * height
+            }));
+            
+            const isPos = indexFund.value >= indexFund.open;
+            const color = isPos ? '#000' : '#666';
+            
+            ctx.fillStyle = isPos ? 'rgba(0,0,0,0.05)' : 'rgba(102,102,102,0.05)';
+            ctx.beginPath();
+            ctx.moveTo(points[0].x, height);
+            points.forEach(p => ctx.lineTo(p.x, p.y));
+            ctx.lineTo(points[points.length - 1].x, height);
+            ctx.fill();
+            
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            points.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+            ctx.stroke();
+            
+            const last = points[points.length - 1];
+            ctx.fillStyle = color;
+            ctx.font = 'bold 10px Courier';
+            ctx.fillText(`${indexFund.value.toFixed(2)}`, width - 48, Math.max(12, Math.min(height - 4, last.y)));
         }
 
         function updateStockCard(symbol) {
@@ -1271,167 +1652,289 @@ Currently using default sample prices.`);
             if (!card) return;
 
             const change = stock.price - stock.open;
-            const changePercent = ((change / stock.open) * 100).toFixed(2);
-            const isPositive = change >= 0;
+            const pct = ((change / stock.open) * 100).toFixed(2);
+            const isPos = change >= 0;
 
             card.querySelector('.current-price').textContent = `₹${stock.price.toFixed(2)}`;
-            
-            const priceChange = card.querySelector('.price-change');
-            priceChange.className = `price-change ${isPositive ? 'positive' : 'negative'}`;
-            priceChange.innerHTML = `
-                <span class="arrow">${isPositive ? '▲' : '▼'}</span>
-                <span>₹${Math.abs(change).toFixed(2)} (${isPositive ? '+' : ''}${changePercent}%)</span>
-            `;
+            card.querySelector('.price-change').className = `price-change ${isPos ? 'positive' : 'negative'}`;
+            card.querySelector('.price-change').textContent = `${isPos ? '▲' : '▼'} ₹${Math.abs(change).toFixed(2)} (${isPos ? '+' : ''}${pct}%)`;
 
-            // Update high/low if needed
-            if (stock.price > stock.high) {
-                stock.high = stock.price;
-                card.querySelectorAll('.stat-value')[0].textContent = `₹${stock.high.toFixed(2)}`;
-            }
-            if (stock.price < stock.low) {
-                stock.low = stock.price;
-                card.querySelectorAll('.stat-value')[1].textContent = `₹${stock.low.toFixed(2)}`;
-            }
+            stock.priceHistory.push(stock.price);
+            if (stock.priceHistory.length > 100) stock.priceHistory.shift();
 
-            // Flash animation
+            drawMiniChart(symbol);
             card.classList.add('flash');
-            setTimeout(() => card.classList.remove('flash'), 1000);
+            setTimeout(() => card.classList.remove('flash'), 500);
         }
 
-        function showFlashNews(newsItem) {
-            const overlay = document.getElementById('overlay');
-            const flashNews = document.getElementById('flashNews');
-            const newsCompany = document.getElementById('newsCompany');
-            const newsText = document.getElementById('newsText');
+        function drawMiniChart(symbol) {
+            const stock = stocks.find(s => s.symbol === symbol);
+            if (!stock) return;
+            
+            const canvas = document.getElementById(`chart-${symbol}`);
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width = canvas.offsetWidth;
+            const height = canvas.height = canvas.offsetHeight;
+            
+            ctx.clearRect(0, 0, width, height);
+            
+            const history = stock.priceHistory;
+            if (history.length < 2) return;
+            
+            const min = Math.min(...history);
+            const max = Math.max(...history);
+            const range = max - min || 1;
+            const padding = range * 0.1;
+            const chartMin = min - padding;
+            const chartMax = max + padding;
+            const chartRange = chartMax - chartMin;
+            
+            const points = history.map((price, i) => ({
+                x: (i / (history.length - 1)) * (width - 50),
+                y: height - ((price - chartMin) / chartRange) * height
+            }));
+            
+            const isPos = stock.price >= stock.open;
+            const color = isPos ? '#000' : '#666';
+            
+            ctx.fillStyle = isPos ? 'rgba(0,0,0,0.05)' : 'rgba(102,102,102,0.05)';
+            ctx.beginPath();
+            ctx.moveTo(points[0].x, height);
+            points.forEach(p => ctx.lineTo(p.x, p.y));
+            ctx.lineTo(points[points.length - 1].x, height);
+            ctx.fill();
+            
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            points.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+            ctx.stroke();
+            
+            const last = points[points.length - 1];
+            ctx.fillStyle = color;
+            ctx.font = 'bold 10px Courier';
+            ctx.fillText(`₹${stock.price.toFixed(2)}`, width - 48, Math.max(12, Math.min(height - 4, last.y)));
+        }
 
-            newsCompany.textContent = newsItem.company;
-            newsText.textContent = newsItem.news;
+        // NEWS
+        function showFlashNews(item) {
+            const stock = stocks.find(s => s.symbol === item.company);
+            document.getElementById('flashCompany').textContent = stock?.name || item.company;
+            document.getElementById('flashText').textContent = item.news;
+            document.getElementById('flashOverlay').classList.add('show');
 
-            overlay.classList.add('show');
-            flashNews.classList.add('show');
-
-            // Apply price impact GRADUALLY over the entire 15-minute session
             setTimeout(() => {
-                const stock = stocks.find(s => s.symbol === newsItem.company || s.symbol.includes(newsItem.company.split(' ')[0]));
+                document.getElementById('flashOverlay').classList.remove('show');
+            }, 2000);
+
+            setTimeout(() => {
                 if (stock) {
-                    const totalImpact = (stock.price * newsItem.impact) / 100;
+                    const drift = item.driftMin + Math.random() * (item.driftMax - item.driftMin);
+                    const impact = (stock.price * drift) / 100;
+                    const steps = Math.floor(SESSION_DURATION_MS / 2000);
+                    const inc = impact / steps;
                     
-                    // Spread the movement over session duration (adjusted for speed)
-                    // At 1x speed: 900 seconds (15 min), at 100x: 9 seconds
-                    const sessionDurationSeconds = (SESSION_DURATION_MS / 1000) / timeSpeed;
-                    const updateInterval = 2000; // Still update every 2 seconds
-                    const totalSteps = Math.floor(sessionDurationSeconds / 2);
-                    const incrementPerStep = totalImpact / totalSteps;
-                    
-                    let currentStep = 0;
-                    
-                    const priceAnimation = setInterval(() => {
-                        if (!sessionStartTime) {
-                            clearInterval(priceAnimation);
+                    let step = 0;
+                    const anim = setInterval(() => {
+                        if (!sessionStartTime || step >= steps || (Date.now() - sessionStartTime) >= SESSION_DURATION_MS) {
+                            clearInterval(anim);
                             return;
                         }
-                        
-                        const elapsed = Date.now() - sessionStartTime;
-                        const acceleratedElapsed = elapsed * timeSpeed;
-                        
-                        if (currentStep < totalSteps && acceleratedElapsed < SESSION_DURATION_MS) {
-                            stock.price += incrementPerStep;
-                            updateStockCard(stock.symbol);
-                            currentStep++;
-                        } else {
-                            clearInterval(priceAnimation);
-                        }
-                    }, updateInterval);
+                        stock.price += inc;
+                        updateStockCard(stock.symbol);
+                        step++;
+                    }, 2000);
                     
-                    // Add to history
-                    addToHistory(newsItem, newsItem.impact);
+                    allPriceAnimations.push(anim);
+                    addToHistory(item, drift);
                 }
-            }, 2000);
-
-            // Hide flash news after 2 seconds
-            setTimeout(() => {
-                overlay.classList.remove('show');
-                flashNews.classList.remove('show');
             }, 2000);
         }
 
+        function addToHistory(item, impact) {
+            const stock = stocks.find(s => s.symbol === item.company);
+            newsHistory.unshift({
+                company: stock?.name || item.company,
+                news: item.news,
+                time: new Date(),
+                session: currentSession
+            });
+            updateNewsHistory();
+        }
+
+        function updateNewsHistory() {
+            const container = document.getElementById('newsHistory');
+            container.innerHTML = '';
+            newsHistory.filter(n => n.session === currentSession).forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'news-item';
+                div.innerHTML = `
+                    <div class="news-company">${item.company}</div>
+                    <div class="news-text">${item.news}</div>
+                    <div class="news-time">${item.time.toLocaleTimeString()}</div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // SESSION CONTROL
         function startSession() {
             if (isFlashNewsRunning) return;
             
             isFlashNewsRunning = true;
             document.getElementById('startBtn').disabled = true;
-            document.getElementById('nextBtn').disabled = true;
+            document.getElementById('skipBtn').disabled = false;
             
-            // Start the market clock
+            sessionStartTime = Date.now();
             startMarketClock();
             
-            const sessionNews = flashNewsData.filter(n => n.session === currentSession);
+            const news = flashNewsData.filter(n => n.session === currentSession);
             currentNewsIndex = 0;
 
-            function showNextNews() {
-                if (currentNewsIndex < sessionNews.length) {
-                    showFlashNews(sessionNews[currentNewsIndex]);
+            function showNext() {
+                if (currentNewsIndex < news.length) {
+                    showFlashNews(news[currentNewsIndex]);
                     currentNewsIndex++;
-                    setTimeout(showNextNews, 3000); // Show next news after 3 seconds
-                } else {
-                    // All news shown, but session continues until market closes
+                    setTimeout(showNext, 3000);
                 }
             }
+            showNext();
+        }
 
-            showNextNews();
+        function skipToEnd() {
+            if (!sessionStartTime) return;
+            
+            allPriceAnimations.forEach(clearInterval);
+            allPriceAnimations = [];
+            sessionStartTime = null;
+            
+            flashNewsData.filter(n => n.session === currentSession).forEach(item => {
+                const stock = stocks.find(s => s.symbol === item.company);
+                if (stock) {
+                    const drift = item.driftMin + Math.random() * (item.driftMax - item.driftMin);
+                    stock.price += (stock.price * drift) / 100;
+                    updateStockCard(stock.symbol);
+                    
+                    if (!newsHistory.some(h => h.company === stock.name && h.session === currentSession)) {
+                        addToHistory(item, drift);
+                    }
+                }
+            });
+            
+            const indexDrift = indexFund.drift[currentSession];
+            indexFund.value += (indexFund.value * indexDrift) / 100;
+            updateIndexCard();
+            
+            document.getElementById('marketClock').textContent = '15:30';
+            document.getElementById('marketStatus').textContent = 'MARKET CLOSED';
+            document.getElementById('marketStatus').className = 'market-status closed';
+            stopMarketClock();
+            
+            document.getElementById('nextBtn').disabled = false;
+            document.getElementById('skipBtn').disabled = true;
         }
 
         function nextSession() {
             currentSession++;
             if (currentSession > 3) {
                 currentSession = 1;
-                // Reset all stock prices to opening values
-                stocks.forEach(stock => {
-                    stock.price = stock.open;
-                    stock.high = stock.open * 1.003;
-                    stock.low = stock.open * 0.997;
-                    updateStockCard(stock.symbol);
+                stocks.forEach(s => {
+                    s.price = s.open;
+                    s.priceHistory = [s.open];
+                    updateStockCard(s.symbol);
                 });
+                indexFund.value = indexFund.open;
+                indexFund.history = [indexFund.open];
+                updateIndexCard();
+                updateIndexStockCard();
             }
             
             document.getElementById('sessionName').textContent = currentSession;
             isFlashNewsRunning = false;
             currentNewsIndex = 0;
-            clearHistory();
-            resetMarketClock();
+            newsHistory = newsHistory.filter(n => n.session !== currentSession);
+            updateNewsHistory();
             
-            // Re-enable start button, disable next button
+            allPriceAnimations.forEach(clearInterval);
+            allPriceAnimations = [];
+            
             document.getElementById('startBtn').disabled = false;
             document.getElementById('nextBtn').disabled = true;
+            document.getElementById('skipBtn').disabled = true;
+            
+            resetMarketClock();
         }
+
+        function startMarketClock() {
+            marketClockInterval = setInterval(() => {
+                if (!sessionStartTime) return;
+                const elapsed = Date.now() - sessionStartTime;
+                const progress = elapsed / SESSION_DURATION_MS;
+                
+                const minutes = MARKET_START_TIME.minutes + Math.floor(progress * 375);
+                const hours = MARKET_START_TIME.hours + Math.floor(minutes / 60);
+                const mins = minutes % 60;
+                document.getElementById('marketClock').textContent = `${hours.toString().padStart(2,'0')}:${mins.toString().padStart(2,'0')}`;
+                
+                const status = document.getElementById('marketStatus');
+                if (progress < 0.9) {
+                    status.textContent = 'MARKET OPEN';
+                    status.className = 'market-status open';
+                } else if (progress < 1) {
+                    status.textContent = 'CLOSING SOON';
+                    status.className = 'market-status closing';
+                } else {
+                    status.textContent = 'MARKET CLOSED';
+                    status.className = 'market-status closed';
+                    stopMarketClock();
+                    document.getElementById('nextBtn').disabled = false;
+                    document.getElementById('skipBtn').disabled = true;
+                }
+            }, 100);
+            
+            setTimeout(() => stopMarketClock(), SESSION_DURATION_MS);
+        }
+
+        function stopMarketClock() {
+            if (marketClockInterval) {
+                clearInterval(marketClockInterval);
+                marketClockInterval = null;
+            }
+        }
+
+        function resetMarketClock() {
+            sessionStartTime = null;
+            document.getElementById('marketClock').textContent = '09:15';
+            document.getElementById('marketStatus').textContent = 'MARKET OPEN';
+            document.getElementById('marketStatus').className = 'market-status open';
+        }
+
+        // Random fluctuations
+        setInterval(() => {
+            if (!sessionStartTime || (Date.now() - sessionStartTime) >= SESSION_DURATION_MS) return;
+            
+            stocks.forEach(stock => {
+                stock.price += stock.price * (Math.random() - 0.5) * 0.003;
+                if (stock.price < stock.open * 0.5) stock.price = stock.open * 0.5;
+                updateStockCard(stock.symbol);
+            });
+            
+            indexFund.value += indexFund.value * (Math.random() - 0.5) * 0.002;
+            updateIndexCard();
+        }, 3000);
 
         // Initialize
         renderStocks();
-        initializeOrderBook();
-
-        // Random price fluctuations (small movements every 3 seconds)
-        setInterval(() => {
-            // Only update prices if market is open (session is running)
-            if (!sessionStartTime) return; // Market hasn't started
-            
-            const elapsed = Date.now() - sessionStartTime;
-            const acceleratedElapsed = elapsed * timeSpeed;
-            if (acceleratedElapsed >= SESSION_DURATION_MS) return; // Market has closed
-            
-            stocks.forEach(stock => {
-                // Calculate realistic random change: 0.05% to 0.15% of current price
-                const percentChange = (Math.random() - 0.5) * 0.003; // -0.15% to +0.15%
-                const randomChange = stock.price * percentChange;
-                stock.price += randomChange;
-                
-                // Ensure price doesn't go negative
-                if (stock.price < stock.open * 0.5) {
-                    stock.price = stock.open * 0.5;
-                }
-                
-                updateStockCard(stock.symbol);
-            });
-        }, 3000);
+        initializeTeamHoldings();
+        updateIndexCard();
+        renderTradeLog();
     </script>
+
+    <!-- OPTIONAL: Link external market engine here -->
+    <!-- Uncomment the line below to use market_engine.js -->
+    <!-- <script src="market_engine.js"></script> -->
+    
 </body>
 </html>
