@@ -257,6 +257,21 @@
             cursor: pointer; font-weight: bold;
         }
         .btn-remove:hover { background: #dc2626; }
+
+        /* HOLDINGS TABLE */
+        .holdings-table {
+            width: 100%; border-collapse: collapse;
+            font-size: 0.83em; font-family: 'Courier New', monospace;
+        }
+        .holdings-table th {
+            background: #000; color: #fff; padding: 7px 8px;
+            text-align: center; font-weight: bold; white-space: nowrap;
+        }
+        .holdings-table th:first-child { text-align: left; }
+        .holdings-table td { padding: 6px 8px; text-align: center; border-bottom: 1px solid #e5e5e5; }
+        .holdings-table td:first-child { text-align: left; font-weight: bold; }
+        .holdings-table tr:nth-child(even) { background: #f9f9f9; }
+        .holdings-zero { color: #ccc; }
     </style>
 </head>
 <body>
@@ -319,6 +334,10 @@
                 <button class="log-btn" onclick="exportTrades()">📥 Export CSV</button>
                 <button class="log-btn" onclick="clearTrades()">🗑 Clear All</button>
             </div>
+
+            <!-- Team Holdings -->
+            <div class="section-title" style="margin-top:20px;">📋 Team Holdings</div>
+            <div id="adminHoldingsTable" style="overflow-x:auto;"></div>
         </div>
 
         <!-- RIGHT: LIVE PRICES -->
@@ -915,6 +934,7 @@
 
             renderTradeLog();
             renderPricesPanel();
+            renderAdminHoldings();
             broadcastStateUpdate();
 
             document.getElementById('tradeQty').value = '';
@@ -1000,6 +1020,33 @@
         function clearTrades() { if (confirm('Clear all?')) { tradeLog = []; initOrderBook(); renderTradeLog(); renderOrderBook(); } }
 
         // ==================== PRICES PANEL ====================
+        function renderAdminHoldings() {
+            const container = document.getElementById('adminHoldingsTable');
+            if (!container) return;
+            const teamNames = Object.keys(teams);
+            if (teamNames.length === 0) { container.innerHTML = '<div style="color:#999;padding:15px;">No teams</div>'; return; }
+            const allSymbols = [indexFund.symbol, ...stocks.map(s => s.symbol)];
+
+            let html = '<table class="holdings-table"><thead><tr><th>Team</th>';
+            allSymbols.forEach(sym => { html += `<th>${sym}</th>`; });
+            html += '<th>Cash</th><th>Net Worth</th></tr></thead><tbody>';
+
+            teamNames.forEach(name => {
+                const team = teams[name];
+                let nw = team.cash;
+                html += `<tr><td>${name}</td>`;
+                allSymbols.forEach(sym => {
+                    const qty = team.holdings[sym] || 0;
+                    if (sym === indexFund.symbol) nw += qty * indexFund.value;
+                    else { const s = stocks.find(st => st.symbol === sym); if (s) nw += qty * s.price; }
+                    html += `<td class="${qty === 0 ? 'holdings-zero' : ''}">${qty}</td>`;
+                });
+                html += `<td>₹${formatINR(team.cash)}</td><td style="font-weight:bold;">₹${formatINR(nw)}</td></tr>`;
+            });
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
         function renderPricesPanel() {
             const panel = document.getElementById('pricesPanel');
             let html = '';
@@ -1185,6 +1232,7 @@
             });
             indexFund.value += indexFund.value * (Math.random() - 0.5) * 0.002;
             renderPricesPanel();
+            renderAdminHoldings();
         }, 3000);
 
         // ==================== INIT ====================
@@ -1193,6 +1241,7 @@
         renderPricesPanel();
         renderTradeLog();
         renderOrderBook();
+        renderAdminHoldings();
     </script>
 </body>
 </html>
