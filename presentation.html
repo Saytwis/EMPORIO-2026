@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EMPORIO 2025 - Live Board</title>
+    <title>EMPORIO 2026 - Live Board</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -184,20 +184,20 @@
         .news-sidebar {
             background: #ffffff;
             border: 2px solid #000000;
-            padding: 15px;
+            padding: 10px;
             overflow-y: auto;
         }
         .news-title {
-            font-size: 1.3em; font-weight: bold; margin-bottom: 15px;
-            padding-bottom: 10px; border-bottom: 2px solid #000000;
+            font-size: 1.1em; font-weight: bold; margin-bottom: 8px;
+            padding-bottom: 6px; border-bottom: 2px solid #000000;
         }
         .news-item {
-            background: #f9f9f9; border: 1px solid #000000;
-            padding: 10px; margin-bottom: 10px; font-size: 0.85em;
+            background: #f9f9f9; border: 1px solid #e0e0e0;
+            padding: 7px 9px; margin-bottom: 6px; font-size: 0.78em;
         }
-        .news-company { font-weight: bold; font-size: 1.05em; margin-bottom: 4px; }
-        .news-text { line-height: 1.5; margin-bottom: 4px; }
-        .news-time { font-size: 0.8em; color: #666; }
+        .news-company { font-weight: bold; font-size: 0.95em; margin-bottom: 2px; }
+        .news-text { line-height: 1.35; margin-bottom: 2px; }
+        .news-time { font-size: 0.75em; color: #999; }
 
         /* FLASH NEWS OVERLAY */
         .flash-overlay {
@@ -234,7 +234,7 @@
         <!-- MAIN CONTENT -->
         <div class="main-content">
             <div class="header">
-                <h1>EMPORIO 2025</h1>
+                <h1>EMPORIO 2026</h1>
                 <span style="opacity:0.4;">|</span>
                 <p>Joseph's Stock Exchange</p>
             </div>
@@ -291,7 +291,7 @@
         let currentSession = 1;
 
         // ==================== BROADCAST CHANNEL ====================
-        const channel = new BroadcastChannel('emporio-2025');
+        const channel = new BroadcastChannel('emporio-2026');
 
         channel.onmessage = (e) => {
             const msg = e.data;
