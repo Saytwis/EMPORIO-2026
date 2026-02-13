@@ -269,6 +269,7 @@
         <div class="top-bar-right">
             <span class="sync-status idle" id="syncStatus">Not synced</span>
             <button class="admin-btn" onclick="broadcastFullSync()">📡 Force Sync</button>
+            <button class="admin-btn" onclick="openModal('stocks')">Stocks</button>
             <button class="admin-btn" onclick="openModal('teams')">Teams</button>
             <button class="admin-btn" onclick="openModal('drift')">Drift</button>
             <button class="admin-btn" onclick="openModal('news')">News</button>
@@ -341,11 +342,21 @@
                 <button class="close-btn" onclick="closeModal()">✕ Close</button>
             </div>
             <div class="tabs">
+                <div class="tab" onclick="switchTab('stocks')">Stocks</div>
                 <div class="tab active" onclick="switchTab('teams')">Teams</div>
                 <div class="tab" onclick="switchTab('drift')">Price Drift</div>
                 <div class="tab" onclick="switchTab('news')">Flash News</div>
                 <div class="tab" onclick="switchTab('index')">Index Fund</div>
                 <div class="tab" onclick="switchTab('engine')">Engine</div>
+            </div>
+
+            <!-- STOCKS -->
+            <div class="tab-content" id="tab-stocks">
+                <div class="config-section">
+                    <div class="config-header">Stock List — Edit names, tickers, and prices</div>
+                    <div id="stockConfigContainer"></div>
+                </div>
+                <button class="btn-save" onclick="saveStockConfig()">💾 Save Stocks</button>
             </div>
 
             <!-- TEAMS -->
@@ -401,7 +412,7 @@
                                 <option value="external" selected>Full Engine</option>
                             </select>
                         </div>
-                        <div class="config-item"><label>Depth Factor</label><input type="number" id="engineDepth" value="0.02" step="0.001"></div>
+                        <div class="config-item"><label>Depth Factor</label><input type="number" id="engineDepth" value="0.25" step="0.001"></div>
                         <div class="config-item"><label>Impact Clamp (%)</label><input type="number" id="engineClamp" value="2.5" step="0.1"></div>
                     </div>
                     <div class="config-header" style="margin-top:15px;">Liquidity Coefficients (K)</div>
@@ -426,7 +437,7 @@
                 SBIN: { startPrice: 720, dailyVolume: 18500000, K: 0.70 },
                 NIFTY50: { startPrice: 21000, dailyVolume: 50000000, K: 0.50 }
             },
-            params: { depthFactor: 0.02, perTradeImpactClamp: 0.025 },
+            params: { depthFactor: 0.25, perTradeImpactClamp: 0.025 },
             calculateImpact(symbol, side, qty, price) {
                 const config = this.stockConfig[symbol];
                 if (!config) return 0;
@@ -462,7 +473,7 @@
 
         const marketEngine = { enabled: 'external',
             config: { ADANIPORTS:{dailyVolume:2500000,K:1.05}, LT:{dailyVolume:3200000,K:1.00}, JSWSTEEL:{dailyVolume:8500000,K:0.85}, ONGC:{dailyVolume:12800000,K:0.75}, TCS:{dailyVolume:1800000,K:1.15}, TITAN:{dailyVolume:2800000,K:1.05}, CEATLTD:{dailyVolume:680000,K:1.60}, SBIN:{dailyVolume:18500000,K:0.70}, NIFTY50:{dailyVolume:50000000,K:0.50} },
-            params: { depthFactor: 0.02, impactClamp: 0.025 }
+            params: { depthFactor: 0.25, impactClamp: 0.025 }
         };
 
         let flashNewsData = [
@@ -589,13 +600,89 @@
         function switchTab(tabName) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            const tabIndex = ['teams','drift','news','index','engine'].indexOf(tabName);
+            const tabIndex = ['stocks','teams','drift','news','index','engine'].indexOf(tabName);
             document.querySelectorAll('.tab')[tabIndex]?.classList.add('active');
             document.getElementById(`tab-${tabName}`).classList.add('active');
+            if (tabName === 'stocks') renderStockConfig();
             if (tabName === 'teams') renderTeamConfig();
             if (tabName === 'drift') renderDriftConfig();
             if (tabName === 'news') renderNewsConfig();
             if (tabName === 'engine') renderEngineK();
+        }
+
+        // STOCK CONFIG
+        function renderStockConfig() {
+            const container = document.getElementById('stockConfigContainer');
+            let html = '<div style="display:grid;grid-template-columns:200px 130px 120px 120px auto;gap:8px;padding:8px;background:#000;color:#fff;font-weight:bold;margin-bottom:4px;">' +
+                '<div>Company Name</div><div>Ticker</div><div>Current Price</div><div>Open Price</div><div>Volume</div></div>';
+
+            stocks.forEach((s, idx) => {
+                html += `<div style="display:grid;grid-template-columns:200px 130px 120px 120px auto;gap:8px;padding:6px 8px;border-bottom:1px solid #e5e5e5;align-items:center;">
+                    <input type="text" value="${s.name}" id="stock-name-${idx}" style="padding:6px;border:2px solid #e0e0e0;">
+                    <input type="text" value="${s.symbol}" id="stock-symbol-${idx}" style="padding:6px;border:2px solid #e0e0e0;font-family:'Courier New',monospace;">
+                    <input type="number" value="${s.price.toFixed(2)}" id="stock-price-${idx}" step="0.01" style="padding:6px;border:2px solid #e0e0e0;font-family:'Courier New',monospace;">
+                    <input type="number" value="${s.open.toFixed(2)}" id="stock-open-${idx}" step="0.01" style="padding:6px;border:2px solid #e0e0e0;font-family:'Courier New',monospace;">
+                    <input type="text" value="${s.volume}" id="stock-vol-${idx}" style="padding:6px;border:2px solid #e0e0e0;">
+                </div>`;
+            });
+
+            // Index fund row
+            html += '<div style="margin-top:15px;padding-top:15px;border-top:3px solid #000;">';
+            html += '<div style="font-weight:bold;margin-bottom:8px;">Index Fund</div>';
+            html += `<div style="display:grid;grid-template-columns:200px 130px 120px 120px auto;gap:8px;align-items:center;">
+                <input type="text" value="${indexFund.name}" id="idx-name" style="padding:6px;border:2px solid #e0e0e0;">
+                <input type="text" value="${indexFund.symbol}" id="idx-symbol" style="padding:6px;border:2px solid #e0e0e0;font-family:'Courier New',monospace;">
+                <input type="number" value="${indexFund.value.toFixed(2)}" id="idx-price" step="0.01" style="padding:6px;border:2px solid #e0e0e0;font-family:'Courier New',monospace;">
+                <input type="number" value="${indexFund.open.toFixed(2)}" id="idx-open" step="0.01" style="padding:6px;border:2px solid #e0e0e0;font-family:'Courier New',monospace;">
+                <input type="text" value="${indexFund.volume}" id="idx-vol" style="padding:6px;border:2px solid #e0e0e0;">
+            </div></div>`;
+
+            container.innerHTML = html;
+        }
+
+        function saveStockConfig() {
+            stocks.forEach((s, idx) => {
+                const newName = document.getElementById(`stock-name-${idx}`).value;
+                const newSymbol = document.getElementById(`stock-symbol-${idx}`).value;
+                const newPrice = parseFloat(document.getElementById(`stock-price-${idx}`).value);
+                const newOpen = parseFloat(document.getElementById(`stock-open-${idx}`).value);
+                const newVol = document.getElementById(`stock-vol-${idx}`).value;
+
+                // Update symbol in team holdings if ticker changed
+                if (newSymbol !== s.symbol) {
+                    Object.values(teams).forEach(team => {
+                        if (team.holdings[s.symbol] !== undefined) {
+                            team.holdings[newSymbol] = team.holdings[s.symbol];
+                            delete team.holdings[s.symbol];
+                        }
+                    });
+                    // Update order book
+                    if (orderBook[s.symbol]) {
+                        orderBook[newSymbol] = orderBook[s.symbol];
+                        delete orderBook[s.symbol];
+                    }
+                }
+
+                s.name = newName || s.name;
+                s.symbol = newSymbol || s.symbol;
+                if (!isNaN(newPrice)) s.price = newPrice;
+                if (!isNaN(newOpen)) s.open = newOpen;
+                s.volume = newVol || s.volume;
+            });
+
+            // Index fund
+            indexFund.name = document.getElementById('idx-name').value || indexFund.name;
+            indexFund.symbol = document.getElementById('idx-symbol').value || indexFund.symbol;
+            const idxPrice = parseFloat(document.getElementById('idx-price').value);
+            const idxOpen = parseFloat(document.getElementById('idx-open').value);
+            if (!isNaN(idxPrice)) indexFund.value = idxPrice;
+            if (!isNaN(idxOpen)) indexFund.open = idxOpen;
+            indexFund.volume = document.getElementById('idx-vol').value || indexFund.volume;
+
+            updateTeamDropdown();
+            renderPricesPanel();
+            broadcastStateUpdate();
+            alert('Stocks saved!');
         }
 
         // TEAM CONFIG
