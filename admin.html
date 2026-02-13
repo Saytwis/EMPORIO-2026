@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EMPORIO 2026 - Admin Desk</title>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -275,6 +277,18 @@
     </style>
 </head>
 <body>
+    <!-- LOGIN SCREEN -->
+    <div id="loginScreen" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:99999;display:flex;align-items:center;justify-content:center;">
+        <div style="text-align:center;color:#fff;max-width:400px;width:90%;">
+            <div style="font-size:2.5em;font-weight:bold;margin-bottom:5px;">EMPORIO 2026</div>
+            <div style="opacity:0.5;margin-bottom:40px;">Admin Desk</div>
+            <div style="text-align:left;margin-bottom:8px;font-size:0.9em;opacity:0.7;">Room Key</div>
+            <input type="text" id="roomKeyInput" placeholder="Enter room key..." style="width:100%;padding:14px 18px;font-size:1.1em;border:2px solid #444;background:#111;color:#fff;margin-bottom:20px;outline:none;" onkeydown="if(event.key==='Enter')joinRoom()">
+            <button onclick="joinRoom()" style="width:100%;padding:14px;background:#fff;color:#000;border:none;font-weight:bold;font-size:1.1em;cursor:pointer;">Connect</button>
+            <div style="margin-top:20px;font-size:0.8em;opacity:0.4;">Use the same key on the presentation screen to sync</div>
+        </div>
+    </div>
+
     <!-- TOP BAR -->
     <div class="top-bar">
         <div class="top-bar-left">
@@ -284,6 +298,7 @@
         <div class="top-bar-right">
             <span class="sync-status idle" id="syncStatus">Not synced</span>
             <button class="admin-btn" onclick="broadcastFullSync()">📡 Force Sync</button>
+            <button class="admin-btn" style="background:rgba(239,68,68,0.3);border-color:rgba(239,68,68,0.5);" onclick="fullReset()">🔄 Reset All</button>
             <button class="admin-btn" onclick="openModal('stocks')">Stocks</button>
             <button class="admin-btn" onclick="openModal('teams')">Teams</button>
             <button class="admin-btn" onclick="openModal('drift')">Drift</button>
@@ -532,52 +547,68 @@
         let orderBook = {};
         let orderIdCounter = 1;
 
-        // ==================== BROADCAST CHANNEL ====================
-        const channel = new BroadcastChannel('emporio-2026');
-
-        channel.onmessage = (e) => {
-            if (e.data.type === 'request-sync') {
-                broadcastFullSync();
-            }
+        // ==================== FIREBASE SYNC ====================
+        const firebaseConfig = {
+            apiKey: "AIzaSyBJUPdflVt2VIe0apilNKNYmZhC1e2JsP4",
+            authDomain: "emporio-2026.firebaseapp.com",
+            databaseURL: "https://emporio-2026-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "emporio-2026",
+            storageBucket: "emporio-2026.firebasestorage.app",
+            messagingSenderId: "502003603114",
+            appId: "1:502003603114:web:834d5f6e7d5f9fe22ba2d3"
         };
+        firebase.initializeApp(firebaseConfig);
+        const fbDb = firebase.database();
+        let roomKey = null;
+        let db = null; // will be set to fbDb.ref('rooms/' + roomKey)
+
+        function joinRoom() {
+            const key = document.getElementById('roomKeyInput').value.trim();
+            if (!key) return alert('Enter a room key!');
+            if (/[.#$/\[\]]/.test(key)) return alert('Room key cannot contain . # $ / [ ]');
+            roomKey = key;
+            db = {
+                ref: (path) => fbDb.ref('rooms/' + roomKey + '/' + path)
+            };
+            document.getElementById('loginScreen').style.display = 'none';
+            // Push initial state to this room
+            broadcastFullSync();
+        }
 
         function buildSyncPayload() {
             return {
-                stocks: stocks.map(s => ({ symbol: s.symbol, price: s.price, open: s.open })),
-                indexFund: { value: indexFund.value, open: indexFund.open, name: indexFund.name },
+                stocks: stocks.map(s => ({ symbol: s.symbol, name: s.name, price: s.price, open: s.open, volume: s.volume })),
+                indexFund: { value: indexFund.value, open: indexFund.open, name: indexFund.name, symbol: indexFund.symbol, volume: indexFund.volume },
                 teams: JSON.parse(JSON.stringify(teams)),
                 currentSession,
                 clock: document.getElementById('marketClock').textContent,
                 marketStatus: {
                     text: document.getElementById('marketStatus').textContent,
                     class: document.getElementById('marketStatus').className.replace('market-status-text ', '')
-                }
+                },
+                timestamp: Date.now()
             };
         }
 
         function broadcastFullSync() {
-            channel.postMessage({ type: 'full-sync', ...buildSyncPayload() });
-            channel.postMessage({ type: 'news-history', newsHistory: newsHistory.filter(n => n.session === currentSession) });
+            db.ref('gameState').set(buildSyncPayload());
+            db.ref('newsHistory').set(newsHistory.filter(n => n.session === currentSession));
             flashSyncStatus();
         }
 
         function broadcastStateUpdate() {
-            channel.postMessage({ type: 'state-update', ...buildSyncPayload() });
+            db.ref('gameState').set(buildSyncPayload());
             flashSyncStatus();
         }
 
         function broadcastFlashNews(company, text) {
-            channel.postMessage({ type: 'flash-news', company, text });
+            db.ref('flashNews').set({ company, text, timestamp: Date.now() });
         }
 
         function broadcastSessionReset() {
-            channel.postMessage({
-                type: 'session-reset',
-                stocks: stocks.map(s => ({ symbol: s.symbol, price: s.price, open: s.open })),
-                indexFund: { value: indexFund.value, open: indexFund.open, name: indexFund.name },
-                teams: JSON.parse(JSON.stringify(teams)),
-                currentSession
-            });
+            db.ref('newsHistory').set([]);
+            db.ref('flashNews').remove();
+            db.ref('gameState').set(buildSyncPayload());
         }
 
         function flashSyncStatus() {
@@ -1092,7 +1123,7 @@
                     }, 2000);
                     allPriceAnimations.push(anim);
                     newsHistory.unshift({ company: companyName, news: item.news, time: new Date().toLocaleTimeString(), session: currentSession });
-                    channel.postMessage({ type: 'news-history', newsHistory: newsHistory.filter(n => n.session === currentSession) });
+                    db.ref('newsHistory').set(newsHistory.filter(n => n.session === currentSession));
                 }
             }, 2000);
         }
@@ -1177,7 +1208,7 @@
             document.getElementById('pauseBtn').disabled = true;
             renderPricesPanel();
             broadcastStateUpdate();
-            channel.postMessage({ type: 'news-history', newsHistory: newsHistory.filter(n => n.session === currentSession) });
+            db.ref('newsHistory').set(newsHistory.filter(n => n.session === currentSession));
         }
 
         function nextSession() {
@@ -1202,6 +1233,70 @@
             resetMarketClock();
             renderPricesPanel();
             broadcastSessionReset();
+        }
+
+        function fullReset() {
+            if (!confirm('⚠️ FULL RESET\n\nThis will:\n• Reset ALL stock prices to starting values\n• Reset ALL team cash and holdings\n• Clear ALL trades and news\n• Reset to Session 1\n• Wipe Firebase state\n\nAre you sure?')) return;
+
+            // Stop everything
+            allPriceAnimations.forEach(clearInterval);
+            allPriceAnimations = [];
+            stopMarketClock();
+            sessionStartTime = null;
+            sessionPaused = false;
+            sessionElapsedBeforePause = 0;
+            isFlashNewsRunning = false;
+            currentNewsIndex = 0;
+            currentSession = 1;
+
+            // Reset stocks
+            const defaultPrices = { ADANIPORTS: 850, LT: 3400, JSWSTEEL: 820, ONGC: 260, TCS: 4100, TITAN: 3600, CEATLTD: 2800, SBIN: 720 };
+            stocks.forEach(s => {
+                s.price = defaultPrices[s.symbol] || s.open;
+                s.open = s.price;
+                s.priceHistory = [s.price];
+            });
+
+            // Reset index
+            indexFund.value = 21000;
+            indexFund.open = 21000;
+            indexFund.history = [21000];
+
+            // Reset teams to defaults
+            teams = {
+                'Team A': { cash: 500000, holdings: {} },
+                'Team B': { cash: 500000, holdings: {} },
+                'Team C': { cash: 500000, holdings: {} },
+                'Team D': { cash: 500000, holdings: {} },
+                'Team E': { cash: 500000, holdings: {} }
+            };
+            initializeTeamHoldings();
+
+            // Clear logs
+            tradeLog = [];
+            newsHistory = [];
+            initOrderBook();
+
+            // Reset UI
+            document.getElementById('sessionName').textContent = '1';
+            document.getElementById('sessionNum').textContent = '1';
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('nextBtn').disabled = true;
+            document.getElementById('skipBtn').disabled = true;
+            document.getElementById('pauseBtn').disabled = true;
+            resetMarketClock();
+
+            // Re-render
+            renderPricesPanel();
+            renderTradeLog();
+            renderOrderBook();
+            renderAdminHoldings();
+
+            // Wipe Firebase room and push fresh state
+            fbDb.ref('rooms/' + roomKey).set(null).then(() => {
+                broadcastFullSync();
+                alert('✅ Full reset complete. Everything is back to defaults.');
+            });
         }
 
         function startMarketClock() {
