@@ -297,20 +297,14 @@
             </div>
 
             <!-- Trade Entry -->
-            <div class="section-title">📊 Place Order</div>
-            <div class="trade-form">
-                <div><label>Team</label><select id="tradeTeam"></select></div>
+            <div class="section-title">📊 Execute Trade</div>
+            <div class="trade-form" style="grid-template-columns: 1fr 1fr 1fr 100px 120px auto;">
+                <div><label>Buyer</label><select id="tradeBuyer"></select></div>
+                <div><label>Seller</label><select id="tradeSeller"></select></div>
                 <div><label>Stock</label><select id="tradeStock"></select></div>
-                <div><label>Side</label><select id="tradeSide"><option value="BUY">BUY</option><option value="SELL">SELL</option></select></div>
                 <div><label>Qty</label><input type="number" id="tradeQty" placeholder="100" min="1"></div>
                 <div><label>Price (₹)</label><input type="number" id="tradePrice" placeholder="850" step="0.01"></div>
-                <div><button onclick="executeTrade()">Place Order</button></div>
-            </div>
-
-            <!-- Order Book -->
-            <div class="section-title">📋 Pending Orders</div>
-            <div class="order-book-grid" id="orderBookContent">
-                <div style="text-align:center;padding:20px;color:#666;grid-column:1/-1;">No pending orders</div>
+                <div><button onclick="executeTrade()">Execute</button></div>
             </div>
 
             <!-- Executed Trades -->
@@ -842,13 +836,19 @@
         }
 
         function updateTeamDropdown() {
-            const select = document.getElementById('tradeTeam');
-            select.innerHTML = '';
-            Object.keys(teams).forEach(name => { const opt = document.createElement('option'); opt.value = name; opt.textContent = name; select.appendChild(opt); });
+            // Populate buyer and seller dropdowns
+            ['tradeBuyer', 'tradeSeller'].forEach(id => {
+                const select = document.getElementById(id);
+                select.innerHTML = '';
+                Object.keys(teams).forEach(name => { const opt = document.createElement('option'); opt.value = name; opt.textContent = name; select.appendChild(opt); });
+            });
+            // Set seller to second team by default
+            const sellerSelect = document.getElementById('tradeSeller');
+            if (sellerSelect.options.length > 1) sellerSelect.selectedIndex = 1;
 
             const stockSelect = document.getElementById('tradeStock');
             stockSelect.innerHTML = '';
-            const idx = document.createElement('option'); idx.value = 'NIFTY50'; idx.textContent = `${indexFund.name} (NIFTY50)`; stockSelect.appendChild(idx);
+            const idx = document.createElement('option'); idx.value = indexFund.symbol; idx.textContent = `${indexFund.name} (${indexFund.symbol})`; stockSelect.appendChild(idx);
             stocks.forEach(s => { const opt = document.createElement('option'); opt.value = s.symbol; opt.textContent = `${s.name} (${s.symbol})`; stockSelect.appendChild(opt); });
         }
 
@@ -870,35 +870,57 @@
 
         // ==================== TRADING ====================
         function executeTrade() {
-            const team = document.getElementById('tradeTeam').value;
+            const buyerName = document.getElementById('tradeBuyer').value;
+            const sellerName = document.getElementById('tradeSeller').value;
             const symbol = document.getElementById('tradeStock').value;
-            const side = document.getElementById('tradeSide').value;
             const qty = parseInt(document.getElementById('tradeQty').value);
             const price = parseFloat(document.getElementById('tradePrice').value);
 
-            if (!team) return alert('Select a team!');
+            if (!buyerName || !sellerName) return alert('Select both buyer and seller!');
+            if (buyerName === sellerName) return alert('Buyer and seller must be different teams!');
             if (!qty || qty <= 0) return alert('Enter valid quantity!');
             if (!price || price <= 0) return alert('Enter valid price!');
 
-            const teamData = teams[team];
+            const buyer = teams[buyerName];
+            const seller = teams[sellerName];
+            if (!buyer || !seller) return alert('Team not found!');
+
             const value = qty * price;
 
-            if (side === 'BUY' && teamData.cash < value) return alert(`Insufficient cash!\n${team}: ₹${formatINR(teamData.cash)}\nNeeds: ₹${formatINR(value)}`);
-            if (side === 'SELL' && (teamData.holdings[symbol] || 0) < qty) return alert(`Insufficient shares!\n${team}: ${teamData.holdings[symbol]||0} ${symbol}`);
+            // Validate
+            if (buyer.cash < value) return alert(`Insufficient cash!\n${buyerName}: ₹${formatINR(buyer.cash)}\nNeeds: ₹${formatINR(value)}`);
+            if ((seller.holdings[symbol] || 0) < qty) return alert(`Insufficient shares!\n${sellerName}: ${seller.holdings[symbol]||0} ${symbol}\nTrying to sell: ${qty}`);
 
-            const order = { id: orderIdCounter++, team, symbol, side, qty, price, timestamp: new Date() };
-            const book = orderBook[symbol];
-            if (side === 'BUY') { book.buys.push(order); book.buys.sort((a,b) => b.price - a.price); }
-            else { book.sells.push(order); book.sells.sort((a,b) => a.price - b.price); }
+            // Execute directly
+            buyer.cash -= value;
+            buyer.holdings[symbol] = (buyer.holdings[symbol] || 0) + qty;
+            seller.cash += value;
+            seller.holdings[symbol] -= qty;
 
-            matchOrders(symbol);
-            renderOrderBook();
+            // Log
+            tradeLog.unshift({ buyer: buyerName, seller: sellerName, symbol, qty, price, value, timestamp: new Date() });
+
+            // Price impact
+            const isIndex = symbol === indexFund.symbol;
+            if (isIndex) {
+                const impact = calculateMarketImpact(symbol, 'BUY', qty, price);
+                indexFund.value = marketEngine.enabled ? indexFund.value * (1 + impact) : price;
+            } else {
+                const stock = stocks.find(s => s.symbol === symbol);
+                if (stock) {
+                    const impact = calculateMarketImpact(symbol, 'BUY', qty, price);
+                    stock.price = marketEngine.enabled ? stock.price * (1 + impact) : price;
+                }
+            }
+
+            renderTradeLog();
+            renderPricesPanel();
+            broadcastStateUpdate();
+
             document.getElementById('tradeQty').value = '';
             document.getElementById('tradePrice').value = '';
 
-            const still = (side==='BUY' && book.buys.some(o=>o.id===order.id)) || (side==='SELL' && book.sells.some(o=>o.id===order.id));
-            if (still) alert(`✅ ${side} order placed for ${symbol} — waiting for match...`);
-            else alert(`✅ Trade executed! ${symbol} ${qty}@₹${price.toFixed(2)}`);
+            alert(`✅ Trade executed!\n\n${buyerName} bought ${qty} ${symbol} from ${sellerName}\n@ ₹${price.toFixed(2)} (Total: ₹${formatINR(value)})`);
         }
 
         function matchOrders(symbol) {
