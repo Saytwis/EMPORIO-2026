@@ -315,7 +315,7 @@
 
                 // Always update teams, session, clock, status
                 if (msg.teams) teams = msg.teams;
-                if (msg.currentSession) {
+                if (msg.currentSession !== undefined) {
                     currentSession = msg.currentSession;
                     document.getElementById('sessionName').textContent = currentSession;
                 }
@@ -326,18 +326,17 @@
                     el.className = 'market-status ' + msg.marketStatus.class;
                 }
 
-                // Only update stock prices when session is NOT active (between sessions)
+                // Update stock prices and index ONLY when session is NOT active
                 if (!msg.sessionActive) {
                     if (msg.stocks) {
+                        // Rebuild stocks array to handle added/renamed stocks
                         msg.stocks.forEach(s => {
-                            const local = stocks.find(ls => ls.symbol === s.symbol);
+                            let local = stocks.find(ls => ls.symbol === s.symbol);
                             if (local) {
                                 local.price = s.price;
                                 local.open = s.open;
                                 if (s.name) local.name = s.name;
                                 if (s.volume) local.volume = s.volume;
-                                local.priceHistory.push(s.price);
-                                if (local.priceHistory.length > 100) local.priceHistory.shift();
                             }
                         });
                     }
@@ -347,14 +346,14 @@
                         if (msg.indexFund.name) indexFund.name = msg.indexFund.name;
                         if (msg.indexFund.symbol) indexFund.symbol = msg.indexFund.symbol;
                         if (msg.indexFund.volume) indexFund.volume = msg.indexFund.volume;
-                        indexFund.history.push(msg.indexFund.value);
-                        if (indexFund.history.length > 100) indexFund.history.shift();
                     }
-                    renderAllStockCards();
                 }
 
+                // Always re-render everything
+                renderAllStockCards();
                 renderTeamHoldings();
 
+                // Connection status - hide the bar
                 document.getElementById('connectionBar').style.display = 'none';
                 document.body.style.paddingTop = '0';
                 document.querySelector('.layout').style.height = 'calc(100vh - 16px)';
