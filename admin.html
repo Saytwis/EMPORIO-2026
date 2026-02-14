@@ -1109,6 +1109,7 @@
 
         function renderOrderBook() {
             const container = document.getElementById('orderBookContent');
+            if (!container) return;
             const syms = Object.keys(orderBook).filter(s => orderBook[s].buys.length > 0 || orderBook[s].sells.length > 0);
             if (syms.length === 0) { container.innerHTML = '<div style="text-align:center;padding:20px;color:#666;grid-column:1/-1;">No pending orders — place a BUY or SELL to start</div>'; return; }
 
