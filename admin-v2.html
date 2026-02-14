@@ -350,9 +350,6 @@
                 <button class="log-btn" onclick="clearTrades()">🗑 Clear All</button>
             </div>
 
-            <!-- Team Holdings -->
-            <div class="section-title" style="margin-top:20px;">📋 Team Holdings</div>
-            <div id="adminHoldingsTable" style="overflow-x:auto;"></div>
         </div>
 
         <!-- RIGHT: LIVE PRICES -->
@@ -455,23 +452,18 @@
         // ==================== EMBEDDED MARKET ENGINE ====================
         window.MarketEngine = {
             stockConfig: {
-                ADANIPORTS: { startPrice: 850, dailyVolume: 2500000, K: 1.05 },
-                LT: { startPrice: 3400, dailyVolume: 3200000, K: 1.00 },
-                JSWSTEEL: { startPrice: 820, dailyVolume: 8500000, K: 0.85 },
-                ONGC: { startPrice: 260, dailyVolume: 12800000, K: 0.75 },
-                TCS: { startPrice: 4100, dailyVolume: 1800000, K: 1.15 },
-                TITAN: { startPrice: 3600, dailyVolume: 2800000, K: 1.05 },
-                CEATLTD: { startPrice: 2800, dailyVolume: 680000, K: 1.60 },
-                SBIN: { startPrice: 720, dailyVolume: 18500000, K: 0.70 },
-                AAPL: { startPrice: 12500, dailyVolume: 45000000, K: 0.60 },
-                MSFT: { startPrice: 31000, dailyVolume: 22000000, K: 0.65 },
-                TSLA: { startPrice: 25500, dailyVolume: 80000000, K: 1.30 },
-                AMZN: { startPrice: 15200, dailyVolume: 35000000, K: 0.70 },
-                NVDA: { startPrice: 9800, dailyVolume: 60000000, K: 1.20 },
-                META: { startPrice: 47000, dailyVolume: 18000000, K: 0.80 },
-                GLOBALETF: { startPrice: 125000, dailyVolume: 50000000, K: 0.40 }
+                TCS:       { startPrice: 4100,   dailyVolume: 1800000,  K: 0.55 },
+                MSFT:      { startPrice: 31000,  dailyVolume: 22000000, K: 0.50 },
+                AAPL:      { startPrice: 12500,  dailyVolume: 45000000, K: 0.55 },
+                GLOBALETF: { startPrice: 125000, dailyVolume: 50000000, K: 0.45 },
+                LT:        { startPrice: 3400,   dailyVolume: 3200000,  K: 0.80 },
+                SBIN:      { startPrice: 720,    dailyVolume: 18500000, K: 0.70 },
+                ONGC:      { startPrice: 260,    dailyVolume: 12800000, K: 0.75 },
+                ADANIPORTS:{ startPrice: 850,    dailyVolume: 2500000,  K: 1.10 },
+                JSWSTEEL:  { startPrice: 820,    dailyVolume: 8500000,  K: 1.05 },
+                NVDA:      { startPrice: 9800,   dailyVolume: 60000000, K: 1.20 }
             },
-            params: { depthFactor: 0.25, perTradeImpactClamp: 0.025 },
+            params: { depthFactor: 0.32, perTradeImpactClamp: 0.035 },
             calculateImpact(symbol, side, qty, price) {
                 const config = this.stockConfig[symbol];
                 if (!config) return 0;
@@ -485,118 +477,70 @@
 
         // ==================== DATA ====================
         let teams = {
-            'Team 1': { cash: 1000000, holdings: {} },
-            'Team 2': { cash: 1000000, holdings: {} },
-            'Team 3': { cash: 1000000, holdings: {} },
-            'Team 4': { cash: 1000000, holdings: {} },
-            'Team 5': { cash: 1000000, holdings: {} },
-            'Team 6': { cash: 1000000, holdings: {} },
-            'Team 7': { cash: 1000000, holdings: {} },
-            'Team 8': { cash: 1000000, holdings: {} },
-            'Team 9': { cash: 1000000, holdings: {} },
-            'Team 10': { cash: 1000000, holdings: {} }
+            'Team 1': { cash: 700000, holdings: {} },
+            'Team 2': { cash: 700000, holdings: {} },
+            'Team 3': { cash: 700000, holdings: {} },
+            'Team 4': { cash: 700000, holdings: {} },
+            'Team 5': { cash: 700000, holdings: {} },
+            'Team 6': { cash: 700000, holdings: {} },
+            'Team 7': { cash: 700000, holdings: {} },
+            'Team 8': { cash: 700000, holdings: {} },
+            'Team 9': { cash: 700000, holdings: {} },
+            'Team 10': { cash: 700000, holdings: {} }
         };
 
         const stocks = [
             { name: 'Adani Ports', symbol: 'ADANIPORTS', price: 850, open: 850, volume: '2.5M', priceHistory: [850] },
             { name: 'L&T', symbol: 'LT', price: 3400, open: 3400, volume: '3.2M', priceHistory: [3400] },
+            { name: 'SBI', symbol: 'SBIN', price: 720, open: 720, volume: '18.5M', priceHistory: [720] },
             { name: 'JSW Steel', symbol: 'JSWSTEEL', price: 820, open: 820, volume: '8.5M', priceHistory: [820] },
             { name: 'ONGC', symbol: 'ONGC', price: 260, open: 260, volume: '12.8M', priceHistory: [260] },
-            { name: 'TCS', symbol: 'TCS', price: 4100, open: 4100, volume: '1.8M', priceHistory: [4100] },
-            { name: 'Titan', symbol: 'TITAN', price: 3600, open: 3600, volume: '2.8M', priceHistory: [3600] },
-            { name: 'CEAT', symbol: 'CEATLTD', price: 2800, open: 2800, volume: '680K', priceHistory: [2800] },
-            { name: 'State Bank of India', symbol: 'SBIN', price: 720, open: 720, volume: '18.5M', priceHistory: [720] },
+            { name: 'Nvidia', symbol: 'NVDA', price: 9800, open: 9800, volume: '60M', priceHistory: [9800] },
             { name: 'Apple', symbol: 'AAPL', price: 12500, open: 12500, volume: '45M', priceHistory: [12500] },
             { name: 'Microsoft', symbol: 'MSFT', price: 31000, open: 31000, volume: '22M', priceHistory: [31000] },
-            { name: 'Tesla', symbol: 'TSLA', price: 25500, open: 25500, volume: '80M', priceHistory: [25500] },
-            { name: 'Amazon', symbol: 'AMZN', price: 15200, open: 15200, volume: '35M', priceHistory: [15200] },
-            { name: 'Nvidia', symbol: 'NVDA', price: 9800, open: 9800, volume: '60M', priceHistory: [9800] },
-            { name: 'Meta', symbol: 'META', price: 47000, open: 47000, volume: '18M', priceHistory: [47000] }
+            { name: 'TCS', symbol: 'TCS', price: 4100, open: 4100, volume: '1.8M', priceHistory: [4100] }
         ];
 
-        let indexFund = { name: 'Global Growth ETF', symbol: 'GLOBALETF', value: 125000, open: 125000, drift: { 1: 0.5, 2: -0.3, 3: 0.8 }, history: [125000], volume: '50M' };
+        let indexFund = { name: 'Global Growth ETF', symbol: 'GLOBALETF', value: 125000, open: 125000, drift: {}, history: [125000], volume: '50M' };
 
         const marketEngine = { enabled: 'external',
             config: {
-                ADANIPORTS:{dailyVolume:2500000,K:1.05}, LT:{dailyVolume:3200000,K:1.00}, JSWSTEEL:{dailyVolume:8500000,K:0.85}, ONGC:{dailyVolume:12800000,K:0.75}, TCS:{dailyVolume:1800000,K:1.15}, TITAN:{dailyVolume:2800000,K:1.05}, CEATLTD:{dailyVolume:680000,K:1.60}, SBIN:{dailyVolume:18500000,K:0.70},
-                AAPL:{dailyVolume:45000000,K:0.60}, MSFT:{dailyVolume:22000000,K:0.65}, TSLA:{dailyVolume:80000000,K:1.30}, AMZN:{dailyVolume:35000000,K:0.70}, NVDA:{dailyVolume:60000000,K:1.20}, META:{dailyVolume:18000000,K:0.80},
-                GLOBALETF:{dailyVolume:50000000,K:0.40}
+                ADANIPORTS:{dailyVolume:2500000,K:1.10}, LT:{dailyVolume:3200000,K:0.80}, SBIN:{dailyVolume:18500000,K:0.70},
+                JSWSTEEL:{dailyVolume:8500000,K:1.05}, ONGC:{dailyVolume:12800000,K:0.75},
+                NVDA:{dailyVolume:60000000,K:1.20}, AAPL:{dailyVolume:45000000,K:0.55}, MSFT:{dailyVolume:22000000,K:0.50},
+                TCS:{dailyVolume:1800000,K:0.55}, GLOBALETF:{dailyVolume:50000000,K:0.45}
             },
-            params: { depthFactor: 0.25, impactClamp: 0.025 }
+            params: { depthFactor: 0.32, impactClamp: 0.035 }
         };
 
         let flashNewsData = [
-            // SESSION 1
-            { session:1, company:'GLOBALETF', news:'Global markets open positive after US inflation cooled from 3.4% to 3.1%. China announced a $120B infrastructure stimulus. Analysts expect moderate global recovery.', driftMin:-1.5, driftMax:4.0, driftMid:2.0, isIndex:true },
-            { session:1, company:'ADANIPORTS', news:'Cargo volume fell 2.8% this month, but long-term shipping contracts increased 6% YoY. Expansion in Southeast Asia continues.', driftMin:-3.0, driftMax:3.5, driftMid:1.0 },
-            { session:1, company:'LT', news:'Govt announced ₹18,000 Cr infra pipeline. L&T rumored to bid on at least 3 major metro projects.', driftMin:-1.0, driftMax:5.0, driftMid:2.5 },
-            { session:1, company:'JSWSTEEL', news:'Steel exports down 4%, but domestic demand up 3.2%. Iron ore prices rising slightly.', driftMin:-4.0, driftMax:3.0, driftMid:0.0 },
-            { session:1, company:'ONGC', news:'Crude oil holding near $79/barrel. Production output steady. Small refinery upgrade announced.', driftMin:-2.0, driftMax:3.0, driftMid:1.0 },
-            { session:1, company:'TCS', news:'New US tech contract worth $950M. However, hiring slowed by 8% this quarter.', driftMin:-2.0, driftMax:6.0, driftMid:2.5 },
-            { session:1, company:'TITAN', news:'Jewelry sales up 7% YoY, but gold prices surged 3% this week, raising input costs.', driftMin:-3.0, driftMax:4.0, driftMid:1.0 },
-            { session:1, company:'CEATLTD', news:'Rubber prices up 6% this quarter. Demand steady from auto sector.', driftMin:-5.0, driftMax:2.0, driftMid:-1.0 },
-            { session:1, company:'SBIN', news:'Loan growth up 9.4% YoY, NPAs slightly down. RBI policy uncertainty remains.', driftMin:-2.0, driftMax:5.0, driftMid:2.0 },
-            { session:1, company:'AAPL', news:'iPhone shipments up 5% globally, but China sales fell 3%.', driftMin:-2.0, driftMax:4.0, driftMid:2.0 },
-            { session:1, company:'MSFT', news:'Azure revenue up 11%, enterprise AI subscriptions growing fast.', driftMin:-1.0, driftMax:6.0, driftMid:3.0 },
-            { session:1, company:'TSLA', news:'Tesla cuts prices by 4% in Europe. Deliveries increased 2% QoQ.', driftMin:-6.0, driftMax:4.0, driftMid:-1.0 },
-            { session:1, company:'AMZN', news:'Online sales up 8%, logistics expansion into 2 new regions.', driftMin:-2.0, driftMax:5.0, driftMid:2.0 },
-            { session:1, company:'NVDA', news:'AI chip demand grew 18% this quarter, but analysts warn of overheating valuations.', driftMin:-3.0, driftMax:8.0, driftMid:4.0 },
-            { session:1, company:'META', news:'Ad revenue up 12%, Reality Labs losses widened by 9%.', driftMin:-2.0, driftMax:7.0, driftMid:3.0 },
-            // SESSION 2 — MACRO SHOCK
-            { session:2, company:'GLOBALETF', news:'Global markets mixed as inflation fears return.', driftMin:-4.0, driftMax:2.0, driftMid:-1.0, isIndex:true },
-            { session:2, company:'ADANIPORTS', news:'Fuel costs rising due to oil spike.', driftMin:-5.0, driftMax:2.0, driftMid:-2.0 },
-            { session:2, company:'LT', news:'Infrastructure funding delays rumored.', driftMin:-4.0, driftMax:3.0, driftMid:0.0 },
-            { session:2, company:'JSWSTEEL', news:'Metal demand uncertain amid slowdown fears.', driftMin:-6.0, driftMax:2.0, driftMid:-2.0 },
-            { session:2, company:'ONGC', news:'Oil rally boosts profits.', driftMin:-2.0, driftMax:7.0, driftMid:3.0 },
-            { session:2, company:'TCS', news:'US clients cutting IT budgets.', driftMin:-5.0, driftMax:2.0, driftMid:-1.0 },
-            { session:2, company:'TITAN', news:'Luxury demand slowing.', driftMin:-5.0, driftMax:2.0, driftMid:-2.0 },
-            { session:2, company:'CEATLTD', news:'Auto demand fears rising.', driftMin:-6.0, driftMax:1.0, driftMid:-3.0 },
-            { session:2, company:'SBIN', news:'Rate hike expectations help bank margins.', driftMin:-2.0, driftMax:5.0, driftMid:2.0 },
-            { session:2, company:'AAPL', news:'Higher rates pressure tech.', driftMin:-5.0, driftMax:2.0, driftMid:-2.0 },
-            { session:2, company:'MSFT', news:'AI still strong, but market nervous.', driftMin:-4.0, driftMax:3.0, driftMid:-1.0 },
-            { session:2, company:'TSLA', news:'EV demand concerns grow.', driftMin:-8.0, driftMax:3.0, driftMid:-3.0 },
-            { session:2, company:'AMZN', news:'Consumer spending slowdown fears.', driftMin:-5.0, driftMax:3.0, driftMid:-1.0 },
-            { session:2, company:'NVDA', news:'Profit booking after rally.', driftMin:-7.0, driftMax:4.0, driftMid:-2.0 },
-            { session:2, company:'META', news:'Ad spending fears.', driftMin:-6.0, driftMax:3.0, driftMid:-2.0 },
-            // SESSION 3 — FINAL CHAOS
-            { session:3, company:'GLOBALETF', news:'Global rally triggered by rate cut hopes.', driftMin:-2.0, driftMax:7.0, driftMid:4.0, isIndex:true },
-            { session:3, company:'ADANIPORTS', news:'Shipping demand rebounds.', driftMin:-3.0, driftMax:8.0, driftMid:4.0 },
-            { session:3, company:'LT', news:'Govt fast-tracks infra spending.', driftMin:-2.0, driftMax:9.0, driftMid:5.0 },
-            { session:3, company:'JSWSTEEL', news:'Metal demand optimism returns.', driftMin:-3.0, driftMax:8.0, driftMid:4.0 },
-            { session:3, company:'ONGC', news:'Oil crash hurts margins.', driftMin:-7.0, driftMax:2.0, driftMid:-3.0 },
-            { session:3, company:'TCS', news:'AI mega contract announced.', driftMin:-2.0, driftMax:10.0, driftMid:6.0 },
-            { session:3, company:'TITAN', news:'Festival demand surge.', driftMin:-3.0, driftMax:9.0, driftMid:5.0 },
-            { session:3, company:'CEATLTD', news:'Auto sector rebound.', driftMin:-2.0, driftMax:11.0, driftMid:6.0 },
-            { session:3, company:'SBIN', news:'Credit boom optimism.', driftMin:-2.0, driftMax:8.0, driftMid:5.0 },
-            { session:3, company:'AAPL', news:'New product rumors drive buying.', driftMin:-3.0, driftMax:9.0, driftMid:5.0 },
-            { session:3, company:'MSFT', news:'AI expansion deal announced.', driftMin:-2.0, driftMax:10.0, driftMid:6.0 },
-            { session:3, company:'TSLA', news:'Autonomous driving breakthrough rumor.', driftMin:-5.0, driftMax:12.0, driftMid:7.0 },
-            { session:3, company:'AMZN', news:'Cloud revenue surprise.', driftMin:-3.0, driftMax:9.0, driftMid:6.0 },
-            { session:3, company:'NVDA', news:'Huge institutional accumulation.', driftMin:-2.0, driftMax:14.0, driftMid:8.0 },
-            { session:3, company:'META', news:'Ad boom + cost cuts.', driftMin:-3.0, driftMax:10.0, driftMid:6.0 }
+            // SESSION 1 — BUILD PHASE (3 news drops)
+            { session:1, company:'ADANIPORTS', news:'Government announces \u20B950,000 Cr infrastructure push. Adani Ports and L&T expected to benefit significantly.', driftMin:2.0, driftMax:3.0, driftMid:2.5,
+              multiImpact: { LT: {min:1.5,max:2.5}, SBIN: {min:0.5,max:1.5} } },
+            { session:1, company:'NVDA', news:'Global tech sector strong overnight. AI chip demand surging across the board.', driftMin:2.0, driftMax:3.0, driftMid:2.5,
+              multiImpact: { MSFT: {min:1.0,max:2.0}, AAPL: {min:0.8,max:1.6}, TCS: {min:0.5,max:1.5} } },
+            { session:1, company:'JSWSTEEL', news:'Steel export demand rising from China. Domestic infrastructure demand also strong.', driftMin:1.5, driftMax:2.5, driftMid:2.0 },
+            // SESSION 2 — MACRO SHOCK (3 news drops)
+            { session:2, company:'SBIN', news:'RBI unexpectedly hikes interest rates. Banking margins under pressure, infra funding costs rise.', driftMin:-3.0, driftMax:-2.0, driftMid:-2.5,
+              multiImpact: { LT: {min:-2.0,max:-1.0}, ADANIPORTS: {min:-1.5,max:-0.5}, GLOBALETF: {min:-1.5,max:-0.5,isIndex:true} } },
+            { session:2, company:'ONGC', news:'Crude oil spikes globally to $86/barrel. Energy sector rallies on supply concerns.', driftMin:3.0, driftMax:4.0, driftMid:3.5,
+              multiImpact: { GLOBALETF: {min:0.5,max:1.5,isIndex:true} } },
+            { session:2, company:'NVDA', news:'US tech correction begins. Valuations stretched, institutional profit-booking accelerates.', driftMin:-3.5, driftMax:-2.5, driftMid:-3.0,
+              multiImpact: { MSFT: {min:-2.5,max:-1.5}, AAPL: {min:-2.0,max:-1.0}, TCS: {min:-1.5,max:-0.5} } },
+            // SESSION 3 — WAR ZONE (3 news drops)
+            { session:3, company:'GLOBALETF', news:'BREAKING: Global markets crash on recession fears. Panic selling across all sectors.', driftMin:-6.0, driftMax:-4.0, driftMid:-5.0, isIndex:true,
+              multiImpact: { ADANIPORTS:{min:-6.0,max:-4.0}, LT:{min:-6.0,max:-4.0}, SBIN:{min:-6.0,max:-4.0}, JSWSTEEL:{min:-6.0,max:-4.0}, ONGC:{min:-6.0,max:-4.0}, NVDA:{min:-6.0,max:-4.0}, AAPL:{min:-6.0,max:-4.0}, MSFT:{min:-6.0,max:-4.0}, TCS:{min:-6.0,max:-4.0} } },
+            { session:3, company:'SBIN', news:'Emergency central bank support expected. Government signals major fiscal intervention.', driftMin:2.5, driftMax:3.5, driftMid:3.0,
+              multiImpact: { LT: {min:1.5,max:2.5}, ADANIPORTS: {min:1.5,max:2.5}, GLOBALETF: {min:2.0,max:3.0,isIndex:true} } },
+            { session:3, company:'NVDA', news:'AI sector explodes after major US government announcement. Massive institutional buying.', driftMin:4.0, driftMax:6.0, driftMid:5.0,
+              multiImpact: { MSFT: {min:2.5,max:3.5}, AAPL: {min:1.5,max:2.5}, TCS: {min:1.5,max:2.5} } }
         ];
 
-        // Macro news for sessions 2 and 3
         const macroNews = {
-            2: {
-                title: 'MACRO NEWS',
-                items: [
-                    'US inflation unexpectedly rises to 3.6%',
-                    'Oil jumps to $86/barrel',
-                    'Bond yields spike',
-                    'Tech stocks under pressure globally',
-                    'FIIs sell ₹4,000 Cr'
-                ]
-            },
-            3: {
-                title: 'MACRO NEWS',
-                items: [
-                    'Surprise: US Fed hints at possible rate cuts',
-                    'Oil suddenly drops to $74',
-                    'Massive institutional buying seen'
-                ]
-            }
+            2: { title: 'MACRO NEWS', items: ['RBI unexpectedly hikes interest rates','Crude oil spikes to $86/barrel','US tech correction underway','FIIs sell \u20B94,000 Cr in Indian equities','Bond yields spike across markets'] },
+            3: { title: 'MACRO NEWS', items: ['Global recession fears trigger panic selling','All major indices down 4-6%','Central banks signal emergency support'] }
         };
+
 
         let currentSession = 1;
         let sessionStartTime = null;
@@ -967,9 +911,8 @@
         // ==================== GAME LOGIC ====================
         function initializeTeamHoldings() {
             const defaultHoldings = {
-                GLOBALETF: 2, ADANIPORTS: 100, LT: 25, JSWSTEEL: 100, ONGC: 250,
-                TCS: 22, TITAN: 25, CEATLTD: 25, SBIN: 120,
-                AAPL: 12, MSFT: 5, TSLA: 6, AMZN: 8, NVDA: 18, META: 3
+                ADANIPORTS: 50, LT: 10, SBIN: 50, JSWSTEEL: 40, ONGC: 100,
+                NVDA: 3, AAPL: 2, MSFT: 1, TCS: 7, GLOBALETF: 0
             };
             Object.keys(teams).forEach(name => {
                 Object.entries(defaultHoldings).forEach(([sym, qty]) => {
@@ -1284,37 +1227,32 @@
             broadcastFlashNews(companyName, item.news);
 
             const tid = setTimeout(() => {
-                const drift = item.driftMin + Math.random() * (item.driftMax - item.driftMin);
-
-                if (isIdx) {
-                    // Apply drift to index/ETF
-                    const impact = (indexFund.value * drift) / 100;
-                    const steps = Math.floor(SESSION_DURATION_MS / 2000);
-                    const inc = impact / steps;
-                    let step = 0;
-                    const anim = setInterval(() => {
-                        if (!sessionStartTime || step >= steps || (Date.now() - sessionStartTime) >= SESSION_DURATION_MS) { clearInterval(anim); return; }
-                        indexFund.value += inc;
-                        renderPricesPanel();
-                        step++;
-                    }, 2000);
-                    allPriceAnimations.push(anim);
-                } else if (stock) {
-                    const impact = (stock.price * drift) / 100;
-                    const steps = Math.floor(SESSION_DURATION_MS / 2000);
-                    const inc = impact / steps;
-                    let step = 0;
-                    const anim = setInterval(() => {
-                        if (!sessionStartTime || step >= steps || (Date.now() - sessionStartTime) >= SESSION_DURATION_MS) { clearInterval(anim); return; }
-                        stock.price += inc;
-                        renderPricesPanel();
-                        step++;
-                    }, 2000);
-                    allPriceAnimations.push(anim);
+                // Apply drift to primary stock
+                function applyDrift(symbol, driftMin, driftMax, isIndex) {
+                    const drift = driftMin + Math.random() * (driftMax - driftMin);
+                    if (isIndex || symbol === indexFund.symbol) {
+                        const impact = (indexFund.value * drift) / 100;
+                        indexFund.value += impact;
+                    } else {
+                        const s = stocks.find(st => st.symbol === symbol);
+                        if (s) { s.price += (s.price * drift) / 100; }
+                    }
                 }
 
+                // Primary impact
+                applyDrift(item.company, item.driftMin, item.driftMax, isIdx);
+
+                // Multi-stock impact (cascading effects)
+                if (item.multiImpact) {
+                    Object.entries(item.multiImpact).forEach(([sym, range]) => {
+                        applyDrift(sym, range.min, range.max, range.isIndex);
+                    });
+                }
+
+                renderPricesPanel();
                 newsHistory.unshift({ company: companyName, news: item.news, time: new Date().toLocaleTimeString(), session: currentSession });
                 const _nr = dbRef('newsHistory'); if (_nr) _nr.set(newsHistory.filter(n => n.session === currentSession));
+                broadcastStateUpdate();
             }, 2000);
             sessionTimeouts.push(tid);
         }
@@ -1406,20 +1344,30 @@
                 const isIdx = item.isIndex || item.company === indexFund.symbol;
                 const drift = item.driftMin + Math.random() * (item.driftMax - item.driftMin);
 
+                // Primary
                 if (isIdx) {
                     indexFund.value += (indexFund.value * drift) / 100;
-                    const companyName = indexFund.name;
-                    if (!newsHistory.some(h => h.company === companyName && h.session === currentSession)) {
-                        newsHistory.unshift({ company: companyName, news: item.news, time: new Date().toLocaleTimeString(), session: currentSession });
-                    }
                 } else {
                     const stock = stocks.find(s => s.symbol === item.company);
-                    if (stock) {
-                        stock.price += (stock.price * drift) / 100;
-                        if (!newsHistory.some(h => h.company === stock.name && h.session === currentSession)) {
-                            newsHistory.unshift({ company: stock.name, news: item.news, time: new Date().toLocaleTimeString(), session: currentSession });
+                    if (stock) stock.price += (stock.price * drift) / 100;
+                }
+
+                // Multi-impact
+                if (item.multiImpact) {
+                    Object.entries(item.multiImpact).forEach(([sym, range]) => {
+                        const d = range.min + Math.random() * (range.max - range.min);
+                        if (range.isIndex || sym === indexFund.symbol) {
+                            indexFund.value += (indexFund.value * d) / 100;
+                        } else {
+                            const s = stocks.find(st => st.symbol === sym);
+                            if (s) s.price += (s.price * d) / 100;
                         }
-                    }
+                    });
+                }
+
+                const companyName = isIdx ? indexFund.name : (stocks.find(s => s.symbol === item.company)?.name || item.company);
+                if (!newsHistory.some(h => h.company === companyName && h.session === currentSession)) {
+                    newsHistory.unshift({ company: companyName, news: item.news, time: new Date().toLocaleTimeString(), session: currentSession });
                 }
             });
 
@@ -1493,7 +1441,7 @@
             currentSession = 1;
 
             // Reset stocks
-            const defaultPrices = { ADANIPORTS:850, LT:3400, JSWSTEEL:820, ONGC:260, TCS:4100, TITAN:3600, CEATLTD:2800, SBIN:720, AAPL:12500, MSFT:31000, TSLA:25500, AMZN:15200, NVDA:9800, META:47000 };
+            const defaultPrices = { ADANIPORTS:850, LT:3400, SBIN:720, JSWSTEEL:820, ONGC:260, NVDA:9800, AAPL:12500, MSFT:31000, TCS:4100 };
             stocks.forEach(s => {
                 s.price = defaultPrices[s.symbol] || s.open;
                 s.open = s.price;
@@ -1507,16 +1455,16 @@
 
             // Reset teams to defaults
             teams = {
-                'Team 1': { cash: 1000000, holdings: {} },
-                'Team 2': { cash: 1000000, holdings: {} },
-                'Team 3': { cash: 1000000, holdings: {} },
-                'Team 4': { cash: 1000000, holdings: {} },
-                'Team 5': { cash: 1000000, holdings: {} },
-                'Team 6': { cash: 1000000, holdings: {} },
-                'Team 7': { cash: 1000000, holdings: {} },
-                'Team 8': { cash: 1000000, holdings: {} },
-                'Team 9': { cash: 1000000, holdings: {} },
-                'Team 10': { cash: 1000000, holdings: {} }
+                'Team 1': { cash: 700000, holdings: {} },
+                'Team 2': { cash: 700000, holdings: {} },
+                'Team 3': { cash: 700000, holdings: {} },
+                'Team 4': { cash: 700000, holdings: {} },
+                'Team 5': { cash: 700000, holdings: {} },
+                'Team 6': { cash: 700000, holdings: {} },
+                'Team 7': { cash: 700000, holdings: {} },
+                'Team 8': { cash: 700000, holdings: {} },
+                'Team 9': { cash: 700000, holdings: {} },
+                'Team 10': { cash: 700000, holdings: {} }
             };
             initializeTeamHoldings();
 
