@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMPORIO 2026 - Live Board</title>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            padding: 8px;
+            font-size: 16px;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 10px;
+            max-width: 100%;
+            margin: 0 auto;
+            height: calc(100vh - 16px);
+        }
+
+        /* HEADER */
+        .header {
+            background: #000000;
+            color: #ffffff;
+            padding: 8px 20px;
+            text-align: center;
+            margin-bottom: 10px;
+            border: 2px solid #000000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        .header h1 { font-size: 1.2em; margin-bottom: 0; }
+        .header p { font-size: 0.85em; opacity: 0.7; }
+
+        /* SESSION INFO */
+        .session-info {
+            background: #000000;
+            color: #ffffff;
+            padding: 10px;
+            text-align: center;
+            margin-bottom: 10px;
+            border: 2px solid #000000;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .session-label, .market-clock, .market-status { font-size: 1.2em; font-weight: bold; }
+        .market-status.open { color: #4ade80; }
+        .market-status.closing { color: #fbbf24; }
+        .market-status.closed { color: #f87171; }
+
+        /* CONNECTION STATUS */
+        .connection-bar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            padding: 6px 16px;
+            font-size: 0.8em;
+            font-weight: bold;
+            text-align: center;
+            z-index: 9999;
+            transition: all 0.3s;
+        }
+        .connection-bar.connected { background: #f0fdf4; color: #16a34a; }
+        .connection-bar.waiting { background: #fef3c7; color: #d97706; }
+        body { padding-top: 30px; }
+        .layout { height: calc(100vh - 38px); }
+
+        /* INDEX CARD */
+        .index-card {
+            background: #fff4e6;
+            border: 3px solid #000000;
+            padding: 12px;
+            margin-bottom: 15px;
+            box-shadow: 4px 4px 0 #000000;
+        }
+
+        /* MAIN CONTENT */
+        .main-content { overflow-y: auto; }
+
+        /* STOCK GRID */
+        .stock-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+        }
+        .stock-card {
+            background: #ffffff;
+            border: 2px solid #000000;
+            padding: 10px;
+            box-shadow: 3px 3px 0 #000000;
+        }
+        .stock-card:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 #000000; transition: all 0.2s; }
+        .company-name { font-size: 0.95em; font-weight: bold; }
+        .stock-symbol { font-size: 0.75em; color: #666; }
+        .current-price { font-size: 1.4em; font-weight: bold; font-family: 'Courier New', monospace; margin: 4px 0; }
+        .price-change { font-size: 0.85em; font-weight: bold; font-family: 'Courier New', monospace; }
+        .price-change.positive { color: #16a34a; }
+        .price-change.negative { color: #dc2626; }
+        .stats {
+            display: grid; grid-template-columns: repeat(2, 1fr);
+            gap: 8px; margin-top: 8px; padding-top: 8px;
+            border-top: 1px solid #e5e5e5; font-size: 0.85em;
+        }
+        .stat-label { color: #666; }
+        .stat-value { font-weight: bold; font-family: 'Courier New', monospace; }
+
+        /* TEAM HOLDINGS TABLE */
+        .team-holdings-section {
+            background: #ffffff;
+            border: 2px solid #000000;
+            padding: 15px;
+            margin-top: 12px;
+        }
+        .holdings-title {
+            font-size: 1.2em; font-weight: bold; margin-bottom: 10px;
+            padding-bottom: 8px; border-bottom: 2px solid #000000;
+        }
+        .holdings-table {
+            width: 100%; border-collapse: collapse;
+            font-size: 0.85em; font-family: 'Courier New', monospace;
+        }
+        .holdings-table th {
+            background: #000000; color: #ffffff; padding: 7px 8px;
+            text-align: center; font-weight: bold;
+        }
+        .holdings-table th:first-child { text-align: left; }
+        .holdings-table td { padding: 6px 8px; text-align: center; border-bottom: 1px solid #e5e5e5; }
+        .holdings-table td:first-child { text-align: left; font-weight: bold; }
+        .holdings-table tr:nth-child(even) { background: #f9f9f9; }
+        .holdings-zero { color: #ccc; }
+
+        /* NEWS SIDEBAR */
+        .news-sidebar {
+            background: #ffffff;
+            border: 2px solid #000000;
+            padding: 8px;
+            overflow-y: auto;
+        }
+        .news-title {
+            font-size: 1em; font-weight: bold; margin-bottom: 6px;
+            padding-bottom: 4px; border-bottom: 2px solid #000000;
+        }
+        .news-item {
+            background: #f9f9f9; border-left: 3px solid #000;
+            padding: 6px 8px; margin-bottom: 5px; font-size: 0.82em;
+        }
+        .news-company { font-weight: bold; font-size: 0.95em; margin-bottom: 2px; }
+        .news-text { line-height: 1.35; margin-bottom: 0; }
+        .news-time { display: none; }
+
+        /* MACRO NEWS BANNER */
+        .macro-banner {
+            background: #1a1a1a; color: #fff;
+            padding: 10px 12px; margin-bottom: 8px;
+            border: 2px solid #333; border-left: 4px solid #ef4444;
+        }
+        .macro-banner-title {
+            font-weight: bold; font-size: 0.9em;
+            margin-bottom: 6px; letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .macro-banner-item {
+            font-size: 0.78em; padding: 2px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            line-height: 1.4;
+        }
+        .macro-banner-item:last-child { border-bottom: none; }
+
+        /* FLASH NEWS OVERLAY */
+        .flash-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); backdrop-filter: blur(10px);
+            display: none; align-items: center; justify-content: center; z-index: 9999;
+        }
+        .flash-overlay.show { display: flex; }
+        .flash-news {
+            background: #ffffff; border: 4px solid #000000;
+            padding: 40px; max-width: 800px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            animation: slideUpNews 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes slideUpNews {
+            from { transform: translateY(30px) scale(0.95); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+        .flash-company { font-size: 2em; font-weight: bold; margin-bottom: 20px; }
+        .flash-text { font-size: 1.2em; line-height: 1.8; }
+    </style>
+</head>
+<body>
+    <!-- LOGIN SCREEN -->
+    <div id="loginScreen" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:99999;display:flex;align-items:center;justify-content:center;">
+        <div style="text-align:center;color:#fff;max-width:400px;width:90%;">
+            <div style="font-size:2.5em;font-weight:bold;margin-bottom:5px;">EMPORIO 2026</div>
+            <div style="opacity:0.5;margin-bottom:40px;">Live Board</div>
+            <div style="text-align:left;margin-bottom:8px;font-size:0.9em;opacity:0.7;">Room Key</div>
+            <input type="text" id="roomKeyInput" placeholder="Enter room key..." style="width:100%;padding:14px 18px;font-size:1.1em;border:2px solid #444;background:#111;color:#fff;margin-bottom:20px;outline:none;" onkeydown="if(event.key==='Enter')joinRoom()">
+            <button onclick="joinRoom()" style="width:100%;padding:14px;background:#fff;color:#000;border:none;font-weight:bold;font-size:1.1em;cursor:pointer;">Connect</button>
+            <div style="margin-top:20px;font-size:0.8em;opacity:0.4;">Use the same key the admin used to connect</div>
+        </div>
+    </div>
+
+    <div class="connection-bar waiting" id="connectionBar">⏳ Waiting for Admin to connect...</div>
+
+    <div class="layout">
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <div class="header">
+                <h1>EMPORIO 2026</h1>
+                <span style="opacity:0.4;">|</span>
+                <p>Joseph's Stock Exchange</p>
+            </div>
+
+            <div class="session-info">
+                <div class="session-label">Session: <span id="sessionName">1</span></div>
+                <div class="market-clock" id="marketClock">09:15</div>
+                <div class="market-status open" id="marketStatus">MARKET OPEN</div>
+            </div>
+
+            <div class="stock-grid" id="stockGrid"></div>
+
+            <div class="team-holdings-section">
+                <div class="holdings-title">📋 Team Holdings</div>
+                <div id="teamHoldingsTable"></div>
+            </div>
+        </div>
+
+        <!-- NEWS SIDEBAR -->
+        <div class="news-sidebar">
+            <div id="macroNewsBanner" style="display:none;"></div>
+            <div class="news-title">📰 Stock News</div>
+            <div id="newsHistory"></div>
+        </div>
+    </div>
+
+    <!-- Flash News -->
+    <div class="flash-overlay" id="flashOverlay">
+        <div class="flash-news">
+            <div class="flash-company" id="flashCompany"></div>
+            <div class="flash-text" id="flashText"></div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== LOCAL DATA (defaults, overwritten by admin sync) ====================
+        const stocks = [
+            { name: 'Adani Ports', symbol: 'ADANIPORTS', price: 850.00, open: 850.00, volume: '2.5M', priceHistory: [850.00] },
+            { name: 'L&T', symbol: 'LT', price: 3400.00, open: 3400.00, volume: '3.2M', priceHistory: [3400.00] },
+            { name: 'JSW Steel', symbol: 'JSWSTEEL', price: 820.00, open: 820.00, volume: '8.5M', priceHistory: [820.00] },
+            { name: 'ONGC', symbol: 'ONGC', price: 260.00, open: 260.00, volume: '12.8M', priceHistory: [260.00] },
+            { name: 'TCS', symbol: 'TCS', price: 4100.00, open: 4100.00, volume: '1.8M', priceHistory: [4100.00] },
+            { name: 'Titan', symbol: 'TITAN', price: 3600.00, open: 3600.00, volume: '2.8M', priceHistory: [3600.00] },
+            { name: 'CEAT', symbol: 'CEATLTD', price: 2800.00, open: 2800.00, volume: '680K', priceHistory: [2800.00] },
+            { name: 'State Bank of India', symbol: 'SBIN', price: 720.00, open: 720.00, volume: '18.5M', priceHistory: [720.00] },
+            { name: 'Apple', symbol: 'AAPL', price: 12500.00, open: 12500.00, volume: '45M', priceHistory: [12500.00] },
+            { name: 'Microsoft', symbol: 'MSFT', price: 31000.00, open: 31000.00, volume: '22M', priceHistory: [31000.00] },
+            { name: 'Tesla', symbol: 'TSLA', price: 25500.00, open: 25500.00, volume: '80M', priceHistory: [25500.00] },
+            { name: 'Amazon', symbol: 'AMZN', price: 15200.00, open: 15200.00, volume: '35M', priceHistory: [15200.00] },
+            { name: 'Nvidia', symbol: 'NVDA', price: 9800.00, open: 9800.00, volume: '60M', priceHistory: [9800.00] },
+            { name: 'Meta', symbol: 'META', price: 47000.00, open: 47000.00, volume: '18M', priceHistory: [47000.00] }
+        ];
+
+        let indexFund = {
+            name: 'Global Growth ETF', symbol: 'GLOBALETF', value: 125000, open: 125000,
+            history: [125000], volume: '50M'
+        };
+
+        let teams = {};
+        let newsHistory = [];
+        let currentSession = 1;
+
+        // ==================== FIREBASE SYNC ====================
+        const firebaseConfig = {
+            apiKey: "AIzaSyBJUPdflVt2VIe0apilNKNYmZhC1e2JsP4",
+            authDomain: "emporio-2026.firebaseapp.com",
+            databaseURL: "https://emporio-2026-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "emporio-2026",
+            storageBucket: "emporio-2026.firebasestorage.app",
+            messagingSenderId: "502003603114",
+            appId: "1:502003603114:web:834d5f6e7d5f9fe22ba2d3"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const fbDb = firebase.database();
+
+        function joinRoom() {
+            const key = document.getElementById('roomKeyInput').value.trim();
+            if (!key) return alert('Enter a room key!');
+            if (/[.#$/\[\]]/.test(key)) return alert('Room key cannot contain . # $ / [ ]');
+            document.getElementById('loginScreen').style.display = 'none';
+
+            const roomRef = fbDb.ref('rooms/' + key);
+
+            // Listen for game state changes
+            roomRef.child('gameState').on('value', (snapshot) => {
+                const msg = snapshot.val();
+                if (!msg) return;
+
+                // Always update teams, session, clock, status
+                if (msg.teams) teams = msg.teams;
+                if (msg.currentSession !== undefined) {
+                    currentSession = msg.currentSession;
+                    document.getElementById('sessionName').textContent = currentSession;
+                }
+                if (msg.clock) document.getElementById('marketClock').textContent = msg.clock;
+                if (msg.marketStatus) {
+                    const el = document.getElementById('marketStatus');
+                    el.textContent = msg.marketStatus.text;
+                    el.className = 'market-status ' + msg.marketStatus.class;
+                }
+
+                // Track initial prices (session 1 opens) for total return
+                if (msg.initialPrices && Object.keys(initialPrices).length === 0) {
+                    initialPrices = msg.initialPrices;
+                }
+
+                // Update stock prices and index ONLY when session is NOT active
+                if (!msg.sessionActive) {
+                    if (msg.stocks) {
+                        // Rebuild stocks array to handle added/renamed stocks
+                        msg.stocks.forEach(s => {
+                            let local = stocks.find(ls => ls.symbol === s.symbol);
+                            if (local) {
+                                local.price = s.price;
+                                local.open = s.open;
+                                if (s.name) local.name = s.name;
+                                if (s.volume) local.volume = s.volume;
+                            }
+                        });
+                    }
+                    if (msg.indexFund) {
+                        indexFund.value = msg.indexFund.value;
+                        indexFund.open = msg.indexFund.open;
+                        if (msg.indexFund.name) indexFund.name = msg.indexFund.name;
+                        if (msg.indexFund.symbol) indexFund.symbol = msg.indexFund.symbol;
+                        if (msg.indexFund.volume) indexFund.volume = msg.indexFund.volume;
+                    }
+                }
+
+                // Always re-render everything
+                renderAllStockCards();
+                renderTeamHoldings();
+
+                // Connection status - hide the bar
+                document.getElementById('connectionBar').style.display = 'none';
+                document.body.style.paddingTop = '0';
+                document.querySelector('.layout').style.height = 'calc(100vh - 16px)';
+            });
+
+            // Listen for news history
+            roomRef.child('newsHistory').on('value', (snapshot) => {
+                const data = snapshot.val();
+                newsHistory = data ? (Array.isArray(data) ? data : Object.values(data)) : [];
+                renderNewsHistory();
+            });
+
+            // Listen for flash news
+            let lastFlashTimestamp = 0;
+            roomRef.child('flashNews').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data && data.timestamp > lastFlashTimestamp) {
+                    lastFlashTimestamp = data.timestamp;
+                    showFlashNews(data.company, data.text, data.session || 1);
+                }
+            });
+
+            // Listen for macro news (sessions 2 & 3)
+            roomRef.child('macroNews').on('value', (snapshot) => {
+                const data = snapshot.val();
+                const banner = document.getElementById('macroNewsBanner');
+                if (!data) { banner.style.display = 'none'; return; }
+                let html = '<div class="macro-banner">';
+                html += `<div class="macro-banner-title">${data.title}</div>`;
+                data.items.forEach(item => { html += `<div class="macro-banner-item">• ${item}</div>`; });
+                html += '</div>';
+                banner.innerHTML = html;
+                banner.style.display = 'block';
+            });
+        }
+
+        // ==================== HELPERS ====================
+        function formatINR(num) {
+            const numStr = Math.round(num).toString();
+            const lastThree = numStr.substring(numStr.length - 3);
+            const otherNumbers = numStr.substring(0, numStr.length - 3);
+            if (otherNumbers !== '') {
+                return otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + "," + lastThree;
+            }
+            return lastThree;
+        }
+
+        // ==================== RENDERING ====================
+        function renderAllStockCards() {
+            const grid = document.getElementById('stockGrid');
+            // Only build DOM once, then update
+            if (grid.children.length === 0) {
+                // Index card
+                const idxCard = document.createElement('div');
+                idxCard.className = 'stock-card index-card';
+                idxCard.id = `stock-${indexFund.symbol}`;
+                grid.appendChild(idxCard);
+                // Stock cards
+                stocks.forEach(stock => {
+                    const card = document.createElement('div');
+                    card.className = 'stock-card';
+                    card.id = `stock-${stock.symbol}`;
+                    grid.appendChild(card);
+                });
+            }
+            // Update index card in grid
+            updateIndexStockCard();
+            // Update each stock
+            stocks.forEach(stock => updateStockCard(stock.symbol));
+        }
+
+        function updateStockCard(symbol) {
+            const stock = stocks.find(s => s.symbol === symbol);
+            if (!stock) return;
+            const card = document.getElementById(`stock-${symbol}`);
+            if (!card) return;
+
+            const change = stock.price - stock.open;
+            const pct = ((change / stock.open) * 100).toFixed(2);
+            const isPos = change >= 0;
+
+            // Total return from session 1 open (only show after session 3 ends)
+            let totalReturnHtml = '';
+            const initPrice = initialPrices[symbol];
+            if (currentSession === 3 && initPrice) {
+                const totalChange = stock.price - initPrice;
+                const totalPct = ((totalChange / initPrice) * 100).toFixed(2);
+                const totalPos = totalChange >= 0;
+                totalReturnHtml = `<div style="margin-top:4px;padding-top:4px;border-top:2px solid #000;font-size:0.8em;font-weight:bold;font-family:'Courier New',monospace;color:${totalPos ? '#16a34a' : '#dc2626'};">
+                    TOTAL: ${totalPos ? '+' : ''}${totalPct}%
+                </div>`;
+            }
+
+            card.innerHTML = `
+                <div class="company-name">${stock.name}</div>
+                <div class="stock-symbol">${stock.symbol}</div>
+                <div class="current-price">₹${stock.price.toFixed(2)}</div>
+                <div class="price-change ${isPos ? 'positive' : 'negative'}">
+                    ${isPos ? '▲' : '▼'} ₹${Math.abs(change).toFixed(2)} (${isPos ? '+' : ''}${pct}%)
+                </div>
+                <div class="stats">
+                    <div><span class="stat-label">Open:</span> <span class="stat-value">₹${stock.open.toFixed(2)}</span></div>
+                    <div><span class="stat-label">Volume:</span> <span class="stat-value">${stock.volume}</span></div>
+                </div>
+                ${totalReturnHtml}
+            `;
+        }
+
+        function updateIndexStockCard() {
+            const card = document.getElementById(`stock-${indexFund.symbol}`);
+            if (!card) return;
+            const change = indexFund.value - indexFund.open;
+            const pct = ((change / indexFund.open) * 100).toFixed(2);
+            const isPos = change >= 0;
+
+            let totalReturnHtml = '';
+            const initPrice = initialPrices[indexFund.symbol];
+            if (currentSession === 3 && initPrice) {
+                const totalChange = indexFund.value - initPrice;
+                const totalPct = ((totalChange / initPrice) * 100).toFixed(2);
+                const totalPos = totalChange >= 0;
+                totalReturnHtml = `<div style="margin-top:4px;padding-top:4px;border-top:2px solid #000;font-size:0.8em;font-weight:bold;font-family:'Courier New',monospace;color:${totalPos ? '#16a34a' : '#dc2626'};">
+                    TOTAL: ${totalPos ? '+' : ''}${totalPct}%
+                </div>`;
+            }
+
+            card.innerHTML = `
+                <div class="company-name">${indexFund.name}</div>
+                <div class="stock-symbol">${indexFund.symbol}</div>
+                <div class="current-price">₹${indexFund.value.toFixed(2)}</div>
+                <div class="price-change ${isPos ? 'positive' : 'negative'}">
+                    ${isPos ? '▲' : '▼'} ₹${Math.abs(change).toFixed(2)} (${isPos ? '+' : ''}${pct}%)
+                </div>
+                <div class="stats">
+                    <div><span class="stat-label">Open:</span> <span class="stat-value">₹${indexFund.open.toFixed(2)}</span></div>
+                    <div><span class="stat-label">Volume:</span> <span class="stat-value">${indexFund.volume}</span></div>
+                </div>
+                ${totalReturnHtml}
+            `;
+        }
+
+        function renderTeamHoldings() {
+            const container = document.getElementById('teamHoldingsTable');
+            if (!container) return;
+            const teamNames = Object.keys(teams);
+            if (teamNames.length === 0) { container.innerHTML = '<div style="color:#999;text-align:center;padding:20px;">Waiting for teams...</div>'; return; }
+            const allSymbols = [indexFund.symbol, ...stocks.map(s => s.symbol)];
+
+            let html = '<table class="holdings-table"><thead><tr><th>Team</th>';
+            allSymbols.forEach(sym => { html += `<th>${sym}</th>`; });
+            html += '<th>Cash</th></tr></thead><tbody>';
+
+            teamNames.forEach(name => {
+                const team = teams[name];
+                html += `<tr><td>${name}</td>`;
+                allSymbols.forEach(sym => {
+                    const qty = team.holdings[sym] || 0;
+                    html += `<td class="${qty === 0 ? 'holdings-zero' : ''}">${qty}</td>`;
+                });
+                html += `<td>₹${formatINR(team.cash)}</td></tr>`;
+            });
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        function renderNewsHistory() {
+            const container = document.getElementById('newsHistory');
+            container.innerHTML = '';
+            newsHistory.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'news-item';
+                div.innerHTML = `
+                    <div class="news-company">${item.company}</div>
+                    <div class="news-text">${item.news}</div>
+                    <div class="news-time">${item.time || ''}</div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        let initialPrices = {}; // Tracks session 1 open prices for total return
+
+        function showFlashNews(company, text, session) {
+            document.getElementById('flashCompany').textContent = company;
+            document.getElementById('flashText').textContent = text;
+            document.getElementById('flashOverlay').classList.add('show');
+            // Session 1: 7s (longer news), Session 2&3: 5s (shorter news)
+            const duration = (session === 1) ? 7000 : 5000;
+            setTimeout(() => { document.getElementById('flashOverlay').classList.remove('show'); }, duration);
+        }
+
+        // Initial render (will show defaults until admin connects)
+        renderAllStockCards();
+        renderTeamHoldings();
+    </script>
+</body>
+</html>
