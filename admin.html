@@ -415,8 +415,8 @@
                 <div class="config-section">
                     <div class="config-header">Index Fund</div>
                     <div class="config-grid">
-                        <div class="config-item"><label>Index Name</label><input type="text" id="indexName" value="NIFTY 50"></div>
-                        <div class="config-item"><label>Starting Value</label><input type="number" id="indexStart" value="21000"></div>
+                        <div class="config-item"><label>Index Name</label><input type="text" id="indexName" value="Global Growth ETF"></div>
+                        <div class="config-item"><label>Starting Value</label><input type="number" id="indexStart" value="125000"></div>
                     </div>
                     <div class="config-header" style="margin-top:15px;">Session Drift</div>
                     <div class="config-grid">
@@ -463,7 +463,13 @@
                 TITAN: { startPrice: 3600, dailyVolume: 2800000, K: 1.05 },
                 CEATLTD: { startPrice: 2800, dailyVolume: 680000, K: 1.60 },
                 SBIN: { startPrice: 720, dailyVolume: 18500000, K: 0.70 },
-                NIFTY50: { startPrice: 21000, dailyVolume: 50000000, K: 0.50 }
+                AAPL: { startPrice: 12500, dailyVolume: 45000000, K: 0.60 },
+                MSFT: { startPrice: 31000, dailyVolume: 22000000, K: 0.65 },
+                TSLA: { startPrice: 25500, dailyVolume: 80000000, K: 1.30 },
+                AMZN: { startPrice: 15200, dailyVolume: 35000000, K: 0.70 },
+                NVDA: { startPrice: 9800, dailyVolume: 60000000, K: 1.20 },
+                META: { startPrice: 47000, dailyVolume: 18000000, K: 0.80 },
+                GLOBALETF: { startPrice: 125000, dailyVolume: 50000000, K: 0.40 }
             },
             params: { depthFactor: 0.25, perTradeImpactClamp: 0.025 },
             calculateImpact(symbol, side, qty, price) {
@@ -494,41 +500,75 @@
             { name: 'TCS', symbol: 'TCS', price: 4100, open: 4100, volume: '1.8M', priceHistory: [4100] },
             { name: 'Titan', symbol: 'TITAN', price: 3600, open: 3600, volume: '2.8M', priceHistory: [3600] },
             { name: 'CEAT', symbol: 'CEATLTD', price: 2800, open: 2800, volume: '680K', priceHistory: [2800] },
-            { name: 'State Bank of India', symbol: 'SBIN', price: 720, open: 720, volume: '18.5M', priceHistory: [720] }
+            { name: 'State Bank of India', symbol: 'SBIN', price: 720, open: 720, volume: '18.5M', priceHistory: [720] },
+            { name: 'Apple', symbol: 'AAPL', price: 12500, open: 12500, volume: '45M', priceHistory: [12500] },
+            { name: 'Microsoft', symbol: 'MSFT', price: 31000, open: 31000, volume: '22M', priceHistory: [31000] },
+            { name: 'Tesla', symbol: 'TSLA', price: 25500, open: 25500, volume: '80M', priceHistory: [25500] },
+            { name: 'Amazon', symbol: 'AMZN', price: 15200, open: 15200, volume: '35M', priceHistory: [15200] },
+            { name: 'Nvidia', symbol: 'NVDA', price: 9800, open: 9800, volume: '60M', priceHistory: [9800] },
+            { name: 'Meta', symbol: 'META', price: 47000, open: 47000, volume: '18M', priceHistory: [47000] }
         ];
 
-        let indexFund = { name: 'NIFTY 50', symbol: 'NIFTY50', value: 21000, open: 21000, drift: { 1: 0.5, 2: -0.3, 3: 0.8 }, history: [21000], volume: '500M' };
+        let indexFund = { name: 'Global Growth ETF', symbol: 'GLOBALETF', value: 125000, open: 125000, drift: { 1: 0.5, 2: -0.3, 3: 0.8 }, history: [125000], volume: '50M' };
 
         const marketEngine = { enabled: 'external',
-            config: { ADANIPORTS:{dailyVolume:2500000,K:1.05}, LT:{dailyVolume:3200000,K:1.00}, JSWSTEEL:{dailyVolume:8500000,K:0.85}, ONGC:{dailyVolume:12800000,K:0.75}, TCS:{dailyVolume:1800000,K:1.15}, TITAN:{dailyVolume:2800000,K:1.05}, CEATLTD:{dailyVolume:680000,K:1.60}, SBIN:{dailyVolume:18500000,K:0.70}, NIFTY50:{dailyVolume:50000000,K:0.50} },
+            config: {
+                ADANIPORTS:{dailyVolume:2500000,K:1.05}, LT:{dailyVolume:3200000,K:1.00}, JSWSTEEL:{dailyVolume:8500000,K:0.85}, ONGC:{dailyVolume:12800000,K:0.75}, TCS:{dailyVolume:1800000,K:1.15}, TITAN:{dailyVolume:2800000,K:1.05}, CEATLTD:{dailyVolume:680000,K:1.60}, SBIN:{dailyVolume:18500000,K:0.70},
+                AAPL:{dailyVolume:45000000,K:0.60}, MSFT:{dailyVolume:22000000,K:0.65}, TSLA:{dailyVolume:80000000,K:1.30}, AMZN:{dailyVolume:35000000,K:0.70}, NVDA:{dailyVolume:60000000,K:1.20}, META:{dailyVolume:18000000,K:0.80},
+                GLOBALETF:{dailyVolume:50000000,K:0.40}
+            },
             params: { depthFactor: 0.25, impactClamp: 0.025 }
         };
 
         let flashNewsData = [
-            { session:1, company:'ADANIPORTS', news:'Adani Ports reported Q3 revenue of ₹7,980 crore (+13% YoY) with EBITDA margin at 50.1%, while net debt rose to ₹51,900 crore following ₹3,000 crore capex during the quarter.', driftMin:-0.6, driftMax:0.8, driftMid:0.1 },
-            { session:1, company:'LT', news:'L&T recorded order inflows of ₹70,200 crore, taking its backlog to ₹4.66 lakh crore, though operating cash flow remained negative due to ₹7,600 crore rise in receivables.', driftMin:-0.8, driftMax:0.9, driftMid:0.1 },
-            { session:1, company:'TITAN', news:'Titan posted 15% revenue growth to ₹11,150 crore with EBITDA margin at 12.8%, while inventory days increased to 159 from 146 last quarter.', driftMin:-0.7, driftMax:1.0, driftMid:0.2 },
-            { session:1, company:'JSWSTEEL', news:'JSW Steel reported EBITDA of ₹6,080 crore (margin 18.9%), down 120 bps QoQ, even as net debt declined marginally to ₹62,300 crore.', driftMin:-1.6, driftMax:-0.4, driftMid:-1.0 },
-            { session:1, company:'ONGC', news:'ONGC realized $79/bbl crude with net profit up 8% YoY, though production volumes fell 2.5% and quarterly capex stood at ₹8,500 crore.', driftMin:-1.0, driftMax:0.6, driftMid:-0.2 },
-            { session:1, company:'TCS', news:'TCS delivered ₹59,400 crore revenue (+8% YoY) with operating margin steady at 24.2%, while employee costs rose 11% year-on-year.', driftMin:0.6, driftMax:1.8, driftMid:1.2 },
+            // SESSION 1 - Indian
+            { session:1, company:'ADANIPORTS', news:'Adani Ports reported Q3 revenue of ₹7,980 crore (+13% YoY) with EBITDA margin at 50.1%, while net debt rose to ₹51,900 crore following ₹3,000 crore capex.', driftMin:-0.6, driftMax:0.8, driftMid:0.1 },
+            { session:1, company:'LT', news:'L&T recorded order inflows of ₹70,200 crore, taking its backlog to ₹4.66 lakh crore, though operating cash flow remained negative.', driftMin:-0.8, driftMax:0.9, driftMid:0.1 },
+            { session:1, company:'TITAN', news:'Titan posted 15% revenue growth to ₹11,150 crore with EBITDA margin at 12.8%, while inventory days increased to 159.', driftMin:-0.7, driftMax:1.0, driftMid:0.2 },
+            { session:1, company:'JSWSTEEL', news:'JSW Steel reported EBITDA of ₹6,080 crore (margin 18.9%), down 120 bps QoQ, even as net debt declined marginally.', driftMin:-1.6, driftMax:-0.4, driftMid:-1.0 },
+            { session:1, company:'ONGC', news:'ONGC realized $79/bbl crude with net profit up 8% YoY, though production volumes fell 2.5%.', driftMin:-1.0, driftMax:0.6, driftMid:-0.2 },
+            { session:1, company:'TCS', news:'TCS delivered ₹59,400 crore revenue (+8% YoY) with operating margin steady at 24.2%.', driftMin:0.6, driftMax:1.8, driftMid:1.2 },
             { session:1, company:'CEATLTD', news:'CEAT revenue grew 9% YoY to ₹3,040 crore, but EBITDA margin contracted to 11.2% as finance costs rose 18%.', driftMin:-2.8, driftMax:-1.2, driftMid:-2.0 },
-            { session:1, company:'SBIN', news:'SBI reported NII of ₹41,500 crore (+17% YoY) with NIM at 3.42%, while unsecured retail advances grew 16% year-on-year.', driftMin:0.7, driftMax:1.9, driftMid:1.3 },
-            { session:2, company:'ADANIPORTS', news:'The company approved ₹9,600 crore additional capex, projecting debt-to-EBITDA near 3.3x while maintaining margin guidance above 49%.', driftMin:-2.6, driftMax:-1.0, driftMid:-1.8 },
+            { session:1, company:'SBIN', news:'SBI reported NII of ₹41,500 crore (+17% YoY) with NIM at 3.42%.', driftMin:0.7, driftMax:1.9, driftMid:1.3 },
+            // SESSION 1 - US
+            { session:1, company:'AAPL', news:'Apple reported $124B quarterly revenue (+6% YoY) driven by Services hitting $26B, while iPhone revenue declined 2% in China.', driftMin:-0.5, driftMax:1.2, driftMid:0.4 },
+            { session:1, company:'MSFT', news:'Microsoft Azure revenue grew 29% YoY to $36B, beating estimates. AI-related cloud bookings exceeded $10B for the first time.', driftMin:0.8, driftMax:2.2, driftMid:1.5 },
+            { session:1, company:'TSLA', news:'Tesla delivered 495K vehicles in Q4, missing the 510K estimate. Margins compressed to 17.6% amid aggressive price cuts globally.', driftMin:-2.5, driftMax:-0.5, driftMid:-1.5 },
+            { session:1, company:'AMZN', news:'Amazon Web Services revenue grew 19% to $28B, while e-commerce operating margins improved to 5.8% from 3.2% last year.', driftMin:0.4, driftMax:1.6, driftMid:1.0 },
+            { session:1, company:'NVDA', news:'Nvidia reported data center revenue of $18.4B (+206% YoY) but guided for potential supply constraints on next-gen Blackwell chips.', driftMin:-1.0, driftMax:2.0, driftMid:0.5 },
+            { session:1, company:'META', news:'Meta reported $40B quarterly revenue (+25% YoY). Ad impressions up 28% while average price per ad rose 6%. Reality Labs lost $4.6B.', driftMin:-0.8, driftMax:1.5, driftMid:0.3 },
+            // SESSION 2 - Indian
+            { session:2, company:'ADANIPORTS', news:'The company approved ₹9,600 crore additional capex, projecting debt-to-EBITDA near 3.3x.', driftMin:-2.6, driftMax:-1.0, driftMid:-1.8 },
             { session:2, company:'LT', news:'Net profit rose 20% to ₹3,460 crore including ₹610 crore exceptional gains, while working capital cycle extended to 118 days.', driftMin:-1.2, driftMax:0.8, driftMid:-0.2 },
-            { session:2, company:'TITAN', news:'Premium segment revenue rose 23% YoY, lifting EBITDA to ₹1,470 crore, though operating cash flow declined 15% sequentially.', driftMin:0.4, driftMax:1.6, driftMid:1.0 },
-            { session:2, company:'JSWSTEEL', news:'JSW Steel approved ₹8,000 crore expansion capex as interest expense increased 15% YoY to ₹1,270 crore.', driftMin:-2.2, driftMax:-0.8, driftMid:-1.5 },
+            { session:2, company:'TITAN', news:'Premium segment revenue rose 23% YoY, lifting EBITDA to ₹1,470 crore, though operating cash flow declined 15%.', driftMin:0.4, driftMax:1.6, driftMid:1.0 },
+            { session:2, company:'JSWSTEEL', news:'JSW Steel approved ₹8,000 crore expansion capex as interest expense increased 15% YoY.', driftMin:-2.2, driftMax:-0.8, driftMid:-1.5 },
             { session:2, company:'ONGC', news:'ONGC declared ₹7/share interim dividend despite flat internal accruals and unchanged production guidance.', driftMin:-1.8, driftMax:-0.6, driftMid:-1.2 },
             { session:2, company:'TCS', news:'TCS trimmed margin outlook by 40 bps to 23.8% while maintaining revenue growth guidance near 8%.', driftMin:-2.4, driftMax:-0.9, driftMid:-1.6 },
             { session:2, company:'CEATLTD', news:'CEAT refinanced ₹1,200 crore debt at 8.2% average cost, while domestic volumes declined 2% sequentially.', driftMin:-1.0, driftMax:0.6, driftMid:-0.2 },
             { session:2, company:'SBIN', news:'Cost-to-income ratio rose to 52.3%, while SME slippages stood at ₹4,100 crore during the quarter.', driftMin:-2.0, driftMax:-0.7, driftMid:-1.3 },
-            { session:3, company:'ADANIPORTS', news:'EBITDA margin held at 50.3%, though interest expense rose 21% YoY to ₹1,920 crore, moderating ROCE to 16.2%.', driftMin:-1.8, driftMax:-0.6, driftMid:-1.2 },
-            { session:3, company:'LT', news:'Execution revenue grew 12% YoY, but receivables rose to ₹68,400 crore, keeping free cash flow under pressure.', driftMin:-3.0, driftMax:-1.2, driftMid:-2.1 },
-            { session:3, company:'TITAN', news:'EBITDA margin remained near 13%, while inventory turnover declined to 2.3x and operating cash flow fell 17% sequentially.', driftMin:-2.8, driftMax:-1.0, driftMid:-1.9 },
+            // SESSION 2 - US
+            { session:2, company:'AAPL', news:'Apple announced $110B buyback — largest in history. iPhone 16 AI features drove 12% upgrade cycle improvement in the US.', driftMin:0.6, driftMax:2.0, driftMid:1.3 },
+            { session:2, company:'MSFT', news:'Microsoft warned of $2B one-time charge related to EU antitrust ruling. Copilot enterprise adoption slowed to 8% seat conversion.', driftMin:-2.0, driftMax:-0.4, driftMid:-1.2 },
+            { session:2, company:'TSLA', news:'Tesla announced partnership with Saudi PIF for $8B Gigafactory. Robotaxi pilot approved in 3 US cities starting Q2.', driftMin:1.0, driftMax:3.0, driftMid:2.0 },
+            { session:2, company:'AMZN', news:'Amazon raised Prime membership fees by 15% across all tiers. Analysts project $3.2B incremental annual revenue.', driftMin:-1.2, driftMax:0.8, driftMid:-0.2 },
+            { session:2, company:'NVDA', news:'Nvidia lost $16B in market cap after reports of US tightening chip export rules to Middle East. China revenue fell 22%.', driftMin:-3.0, driftMax:-1.0, driftMid:-2.0 },
+            { session:2, company:'META', news:'Instagram Reels ad revenue surpassed YouTube Shorts for the first time. Threads MAU hit 250M, up 40% QoQ.', driftMin:0.8, driftMax:2.4, driftMid:1.6 },
+            // SESSION 3 - Indian
+            { session:3, company:'ADANIPORTS', news:'EBITDA margin held at 50.3%, though interest expense rose 21% YoY to ₹1,920 crore.', driftMin:-1.8, driftMax:-0.6, driftMid:-1.2 },
+            { session:3, company:'LT', news:'Execution revenue grew 12% YoY, but receivables rose to ₹68,400 crore, keeping FCF under pressure.', driftMin:-3.0, driftMax:-1.2, driftMid:-2.1 },
+            { session:3, company:'TITAN', news:'EBITDA margin remained near 13%, while inventory turnover declined to 2.3x.', driftMin:-2.8, driftMax:-1.0, driftMid:-1.9 },
             { session:3, company:'JSWSTEEL', news:'Net debt reduced to ₹60,850 crore, even as export realizations softened 3% sequentially.', driftMin:0.4, driftMax:1.6, driftMid:1.0 },
             { session:3, company:'ONGC', news:'Reserve replacement ratio stood at 0.94 while dividend payout remained above 45% of profit.', driftMin:-2.2, driftMax:-0.8, driftMid:-1.5 },
-            { session:3, company:'TCS', news:'Deal wins stood at $9.7 billion for the quarter, though revenue per employee declined 2.6% sequentially.', driftMin:-2.6, driftMax:-1.0, driftMid:-1.8 },
+            { session:3, company:'TCS', news:'Deal wins stood at $9.7 billion for the quarter, though revenue per employee declined 2.6%.', driftMin:-2.6, driftMax:-1.0, driftMid:-1.8 },
             { session:3, company:'CEATLTD', news:'EBITDA margin improved to 11.8%, while working capital days increased to 64 from 58.', driftMin:-0.8, driftMax:0.8, driftMid:0.0 },
-            { session:3, company:'SBIN', news:'Loan growth reached 19% YoY, with provision coverage improving to 77% despite treasury MTM losses of ₹1,700 crore.', driftMin:0.3, driftMax:1.3, driftMid:0.8 }
+            { session:3, company:'SBIN', news:'Loan growth reached 19% YoY, with provision coverage improving to 77%.', driftMin:0.3, driftMax:1.3, driftMid:0.8 },
+            // SESSION 3 - US
+            { session:3, company:'AAPL', news:'Apple Vision Pro sales fell 70% in Q4. Management cut Reality division headcount by 2,000. Focus shifts back to iPhone AI.', driftMin:-2.0, driftMax:-0.2, driftMid:-1.1 },
+            { session:3, company:'MSFT', news:'Azure secured $42B multi-year DoD cloud contract. GitHub Copilot surpassed 2M paid subscribers.', driftMin:0.5, driftMax:2.0, driftMid:1.2 },
+            { session:3, company:'TSLA', news:'Tesla Energy division revenue up 67% YoY to $8B. Megapack backlog now exceeds $12B through 2027.', driftMin:0.8, driftMax:2.5, driftMid:1.6 },
+            { session:3, company:'AMZN', news:'AWS suffered 47-minute outage affecting major enterprises. Three Fortune 500 clients began multi-cloud migration talks.', driftMin:-2.5, driftMax:-0.8, driftMid:-1.6 },
+            { session:3, company:'NVDA', news:'Nvidia unveiled next-gen Rubin architecture at GTC. Pre-orders from hyperscalers exceeded $30B within 48 hours.', driftMin:1.5, driftMax:3.5, driftMid:2.5 },
+            { session:3, company:'META', news:'EU fined Meta €1.8B for data transfer violations. Company announced plans to appeal, citing regulatory overreach.', driftMin:-2.8, driftMax:-1.0, driftMid:-1.9 }
         ];
 
         let currentSession = 1;
@@ -581,6 +621,7 @@
                 indexFund: { value: indexFund.value, open: indexFund.open, name: indexFund.name, symbol: indexFund.symbol, volume: indexFund.volume },
                 teams: JSON.parse(JSON.stringify(teams)),
                 currentSession,
+                sessionActive: !!sessionStartTime,
                 clock: document.getElementById('marketClock').textContent,
                 marketStatus: {
                     text: document.getElementById('marketStatus').textContent,
@@ -1250,7 +1291,7 @@
             currentSession = 1;
 
             // Reset stocks
-            const defaultPrices = { ADANIPORTS: 850, LT: 3400, JSWSTEEL: 820, ONGC: 260, TCS: 4100, TITAN: 3600, CEATLTD: 2800, SBIN: 720 };
+            const defaultPrices = { ADANIPORTS:850, LT:3400, JSWSTEEL:820, ONGC:260, TCS:4100, TITAN:3600, CEATLTD:2800, SBIN:720, AAPL:12500, MSFT:31000, TSLA:25500, AMZN:15200, NVDA:9800, META:47000 };
             stocks.forEach(s => {
                 s.price = defaultPrices[s.symbol] || s.open;
                 s.open = s.price;
@@ -1258,9 +1299,9 @@
             });
 
             // Reset index
-            indexFund.value = 21000;
-            indexFund.open = 21000;
-            indexFund.history = [21000];
+            indexFund.value = 125000;
+            indexFund.open = 125000;
+            indexFund.history = [125000];
 
             // Reset teams to defaults
             teams = {
